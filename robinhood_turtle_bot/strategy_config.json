@@ -1,0 +1,32 @@
+{
+  "name": "Turtle System 1 — Stocks & ETFs — RSI >= 50",
+  "version": "1.0",
+  "mode": "research_and_approval_only",
+  "robinhood_saved_scanner_id": "2a70f2b7-0326-4eab-b5c0-3720757abbb6",
+  "instruments": ["STOCK", "ETF"],
+  "side": "long_only",
+  "daily_rsi": {"period": 14, "minimum": 50, "use_last_completed_daily_bar": true},
+  "turtle_system_1": {
+    "entry_breakout_days": 20,
+    "primary_exit_days": 10,
+    "skip_20_day_breakout_if_previous_theoretical_20_day_breakout_was_a_winner": true,
+    "fallback_entry_breakout_days": 55,
+    "fallback_entry_exempt_from_previous_winner_filter": true,
+    "volatility_N_period": 20,
+    "initial_stop_multiple_N": 2,
+    "pyramid_spacing_multiple_N": 0.5,
+    "maximum_units_per_symbol": 4
+  },
+  "portfolio_gates": {
+    "max_distinct_open_symbols_in_agentic_account": 5,
+    "min_post_trade_cash_as_fraction_of_net_liquidation_value": 0.05,
+    "max_gross_market_value_per_symbol_fraction_of_net_liquidation_value": 0.19,
+    "max_risk_at_stop_per_symbol_fraction_of_net_liquidation_value": 0.005,
+    "no_margin_borrowing": true,
+    "include_all_existing_equity_and_etf_positions": true,
+    "reserve_open_buy_orders": true,
+    "count_open_buy_order_symbols_as_occupied_slots": true,
+    "exit_orders_are_allowed_even_when_entry_gates_fail": true,
+    "never_liquidate_existing_positions_only_to_rebuild_cash_floor_without_separate_authorization": true
+  }
+}
