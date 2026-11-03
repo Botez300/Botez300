@@ -32,7 +32,7 @@ class TestGates(unittest.TestCase):
     def test_stop_risk_cap(self):
         s = Snapshot(D("10000"), D("6000"), tuple(), tuple())
         result = max_buy_shares(s, "A", D("50"), D("5"))
-        self.assertEqual(result.permitted_shares, 5)  # 0.5% NAV / $10 2N stop risk
+        self.assertEqual(result.permitted_shares, 4)  # 0.5% of ($10k - $500 reserve) / $10 2N stop risk
 
     def test_open_order_reserved_against_cash(self):
         s = Snapshot(D("10000"), D("1500"), tuple(), (PendingBuy("B", D("950")),))
@@ -58,6 +58,13 @@ class TestGates(unittest.TestCase):
         s = Snapshot(D("10000"), D("1000"), tuple(), tuple())
         result = max_buy_shares(s, "A", D("50"), D("1"), min_cash_usd=D("1000"))
         self.assertEqual(result.permitted_shares, 0)
+
+    def test_reserve_excluded_from_sizing_nav(self):
+        s = Snapshot(D("10000"), D("6000"), tuple(), tuple())
+        on = max_buy_shares(s, "A", D("10"), D("0.01"))
+        off = max_buy_shares(s, "A", D("10"), D("0.01"), exclude_reserve_from_sizing_nav=False)
+        self.assertEqual(on.permitted_shares, 180)   # 19% of 9,500 / $10.025
+        self.assertEqual(off.permitted_shares, 189)  # 19% of 10,000 / $10.025
 
 if __name__ == '__main__':
     unittest.main()

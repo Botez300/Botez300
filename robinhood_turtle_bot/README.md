@@ -42,7 +42,7 @@ Registered in the repo's `.mcp.json` as `robinhood-turtle-bot`.
 
 - Max 5 distinct symbols with holdings or open buy orders (all holdings count).
 - At least $500 of actual cash left after any purchase, including open buy reservations (`min_post_trade_cash_usd` in the config). Buying power does not count.
-- ≤ 19% of NAV market value per symbol; ≤ 0.5% of NAV stop risk per symbol.
+- ≤ 19% market value and ≤ 0.5% stop risk per symbol, both measured on NAV minus the $500 reserve.
 - If the account already breaks a limit, new buys are blocked; nothing is sold automatically.
 - Stops and gaps can lose more than the sizing assumes.
 

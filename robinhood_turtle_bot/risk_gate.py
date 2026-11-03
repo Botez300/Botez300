@@ -56,6 +56,7 @@ def max_buy_shares(
     max_symbols: int = 5,
     min_cash_fraction: Decimal = D("0"),
     min_cash_usd: Decimal = D("500"),
+    exclude_reserve_from_sizing_nav: bool = True,
     max_symbol_fraction: Decimal = D("0.19"),
     max_symbol_stop_risk_fraction: Decimal = D("0.005"),
 ) -> Decision:
@@ -63,7 +64,8 @@ def max_buy_shares(
 
     The cash reserve is a fixed dollar floor (default $500) that must remain
     after execution and open-order reservations; min_cash_fraction can add a
-    %-of-NAV floor (the larger one wins). Prices carry a small fill buffer. Risk uses 2N per new share; overnight
+    %-of-NAV floor (the larger one wins). The 19% and 0.5% caps use NAV minus
+    that reserve. Prices carry a small fill buffer. Risk uses 2N per new share; overnight
     gaps can produce losses larger than the assumed stop loss.
     """
     symbol = symbol.upper().strip()
@@ -73,6 +75,8 @@ def max_buy_shares(
         raise ValueError("Fees, execution buffer and cash reserve cannot be negative")
     nav = snapshot.net_liquidation_value
     cash_floor = max(min_cash_usd, nav * min_cash_fraction)
+    # The 19% allocation and 0.5% risk caps are measured on NAV minus the reserve.
+    sizing_nav = max(D("0"), nav - cash_floor) if exclude_reserve_from_sizing_nav else nav
     pending_cost = sum((o.estimated_cost for o in snapshot.pending_buys), D("0"))
     cash_after_existing_orders = snapshot.unencumbered_cash_before_open_buy_reservations - pending_cost
     occupied = {p.symbol.upper() for p in snapshot.positions if p.market_value > 0}
@@ -93,8 +97,8 @@ def max_buy_shares(
     existing_risk += sum((o.reserved_risk_at_stop for o in snapshot.pending_buys if o.symbol.upper() == symbol), D("0"))
     buffered_price = expected_fill_price * (D("1") + execution_buffer_bps / D("10000"))
     cash_spendable = max(D("0"), cash_after_existing_orders - cash_floor - order_fee_estimate)
-    symbol_spendable = max(D("0"), nav * max_symbol_fraction - symbol_market_value - symbol_pending_cost)
-    symbol_risk_left = max(D("0"), nav * max_symbol_stop_risk_fraction - existing_risk)
+    symbol_spendable = max(D("0"), sizing_nav * max_symbol_fraction - symbol_market_value - symbol_pending_cost)
+    symbol_risk_left = max(D("0"), sizing_nav * max_symbol_stop_risk_fraction - existing_risk)
     risk_per_share = D("2") * N
     cash_shares = int((cash_spendable / buffered_price).to_integral_value(rounding=ROUND_FLOOR))
     allocation_shares = int((symbol_spendable / buffered_price).to_integral_value(rounding=ROUND_FLOOR))

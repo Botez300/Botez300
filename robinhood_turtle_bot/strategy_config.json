@@ -28,6 +28,7 @@
     "max_distinct_open_symbols_in_agentic_account": 5,
     "min_post_trade_cash_usd": 500,
     "min_post_trade_cash_as_fraction_of_net_liquidation_value": 0,
+    "exclude_cash_reserve_from_sizing_nav": true,
     "max_gross_market_value_per_symbol_fraction_of_net_liquidation_value": 0.19,
     "max_risk_at_stop_per_symbol_fraction_of_net_liquidation_value": 0.005,
     "no_margin_borrowing": true,
