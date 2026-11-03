@@ -9,7 +9,7 @@ System 1 on US stocks/ETFs, filtered by completed daily RSI(14) ≥ 50.
 |---|---|
 | `strategy_config.json` | All rule parameters and the Robinhood saved scanner id |
 | `signals.py` | Turtle math: RSI(14), N, 20/55-day breakouts, skip-after-winner ledger, 10-day exit, 2N stop, 0.5N pyramids |
-| `risk_gate.py` | Fail-closed buy sizing: 5 symbols, 5% cash floor, 19% per symbol, 0.5% NAV stop risk |
+| `risk_gate.py` | Fail-closed buy sizing: 5 symbols, $500 cash reserve, 19% per symbol, 0.5% NAV stop risk |
 | `mcp_server.py` | Local stdio MCP server exposing the above as tools (no extra packages) |
 | `../.claude/skills/robinhood-turtle-bot/SKILL.md` | Step-by-step runbook Claude follows using the Robinhood MCP tools |
 
@@ -41,7 +41,7 @@ Registered in the repo's `.mcp.json` as `robinhood-turtle-bot`.
 ## Account limits
 
 - Max 5 distinct symbols with holdings or open buy orders (all holdings count).
-- ≥ 5% of NAV in actual cash after any purchase, including open buy reservations.
+- At least $500 of actual cash left after any purchase, including open buy reservations (`min_post_trade_cash_usd` in the config). Buying power does not count.
 - ≤ 19% of NAV market value per symbol; ≤ 0.5% of NAV stop risk per symbol.
 - If the account already breaks a limit, new buys are blocked; nothing is sold automatically.
 - Stops and gaps can lose more than the sizing assumes.

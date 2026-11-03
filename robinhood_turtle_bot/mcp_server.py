@@ -64,7 +64,7 @@ TOOLS = [
     },
     {
         "name": "turtle_size_buy",
-        "description": "Fail-closed max whole shares for a proposed BUY under the account gates: 5 occupied symbols (holdings + open buy orders), >=5% NAV cash after purchase, <=19% NAV per symbol, <=0.5% NAV stop risk per symbol. Proposal only, not authorization.",
+        "description": "Fail-closed max whole shares for a proposed BUY under the account gates: 5 occupied symbols (holdings + open buy orders), >=$500 cash reserve left after purchase, <=19% NAV per symbol, <=0.5% NAV stop risk per symbol. Proposal only, not authorization.",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -119,7 +119,8 @@ def call_tool(name: str, args: dict) -> dict:
             snap, args["symbol"], _d(args["expected_fill_price"]), _d(args["N"]),
             order_fee_estimate=_d(args.get("order_fee_estimate")),
             max_symbols=g["max_distinct_open_symbols_in_agentic_account"],
-            min_cash_fraction=_d(g["min_post_trade_cash_as_fraction_of_net_liquidation_value"]),
+            min_cash_fraction=_d(g.get("min_post_trade_cash_as_fraction_of_net_liquidation_value", 0)),
+            min_cash_usd=_d(g.get("min_post_trade_cash_usd", 500)),
             max_symbol_fraction=_d(g["max_gross_market_value_per_symbol_fraction_of_net_liquidation_value"]),
             max_symbol_stop_risk_fraction=_d(g["max_risk_at_stop_per_symbol_fraction_of_net_liquidation_value"]),
         )

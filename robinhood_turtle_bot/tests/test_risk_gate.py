@@ -46,5 +46,18 @@ class TestGates(unittest.TestCase):
         self.assertGreater(result.permitted_shares, 0)
         self.assertEqual(result.distinct_symbols_after_proposed_purchase, 5)
 
+    def test_flat_500_reserve_independent_of_nav(self):
+        # $100k account: a 5% rule would block, the flat $500 reserve allows 2 shares.
+        s = Snapshot(D("100000"), D("610"), tuple(), tuple())
+        result = max_buy_shares(s, "A", D("50"), D("1"))
+        self.assertEqual(result.required_cash_floor, D("500"))
+        self.assertEqual(result.permitted_shares, 2)
+        self.assertGreaterEqual(result.remaining_cash_after_proposed_purchase, D("500"))
+
+    def test_custom_reserve(self):
+        s = Snapshot(D("10000"), D("1000"), tuple(), tuple())
+        result = max_buy_shares(s, "A", D("50"), D("1"), min_cash_usd=D("1000"))
+        self.assertEqual(result.permitted_shares, 0)
+
 if __name__ == '__main__':
     unittest.main()

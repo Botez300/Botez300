@@ -3,9 +3,16 @@
   "version": "1.0",
   "mode": "research_and_approval_only",
   "robinhood_saved_scanner_id": "2a70f2b7-0326-4eab-b5c0-3720757abbb6",
-  "instruments": ["STOCK", "ETF"],
+  "instruments": [
+    "STOCK",
+    "ETF"
+  ],
   "side": "long_only",
-  "daily_rsi": {"period": 14, "minimum": 50, "use_last_completed_daily_bar": true},
+  "daily_rsi": {
+    "period": 14,
+    "minimum": 50,
+    "use_last_completed_daily_bar": true
+  },
   "turtle_system_1": {
     "entry_breakout_days": 20,
     "primary_exit_days": 10,
@@ -19,7 +26,8 @@
   },
   "portfolio_gates": {
     "max_distinct_open_symbols_in_agentic_account": 5,
-    "min_post_trade_cash_as_fraction_of_net_liquidation_value": 0.05,
+    "min_post_trade_cash_usd": 500,
+    "min_post_trade_cash_as_fraction_of_net_liquidation_value": 0,
     "max_gross_market_value_per_symbol_fraction_of_net_liquidation_value": 0.19,
     "max_risk_at_stop_per_symbol_fraction_of_net_liquidation_value": 0.005,
     "no_margin_borrowing": true,

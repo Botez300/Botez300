@@ -20,7 +20,7 @@ Tools:
 5. **Signal.** For each candidate: `get_equity_historicals` (interval `day`, bounds `regular`, start ≈ 1 year ago, ≤10 symbols per call) and the live last price. Call `turtle_evaluate_entry` with `last_bar_complete=false` during the session (today's bar is forming and is dropped). Act only on `ENTER_20` or `ENTER_55_FAILSAFE`. After the close, today's daily bar may still come back `interpolated: true` (a placeholder); rebuild it from `interval: hour` bars for the session, then use `last_bar_complete=true` and place next-day buy stop-limit orders at the trigger (limit = trigger + 0.5N, so a gap above it does not fill). `run_scan` returns at most 200 rows (largest market cap first).
 6. **Size.** `turtle_size_buy` with the full snapshot. For each existing Turtle position pass `risk_at_stop = shares × max(0, price − stop_all_units)`; for non-Turtle holdings pass `risk_at_stop = 0` and their market value. For each open buy order pass remaining cost. `permitted_shares = 0` → no trade, report the reason.
 7. **Pyramids.** `ADD_UNIT_SUBJECT_TO_RISK_GATE` → size again with `turtle_size_buy`; the gates usually allow fewer than 4 units.
-8. **Propose → review → approve → place.** Show symbol, signal, shares, expected cost, stop, cash left vs 5% floor, slots used. Call `review_equity_order`. Only after explicit approval, `place_equity_order` (whole shares, limit near the ask, no margin). After fill, recompute stop/adds from the actual fill price.
+8. **Propose → review → approve → place.** Show symbol, signal, shares, expected cost, stop, cash left vs the $500 reserve, slots used. Call `review_equity_order`. Only after explicit approval, `place_equity_order` (whole shares, limit near the ask, no margin). After fill, recompute stop/adds from the actual fill price.
 
 ## Hard rules
 
@@ -28,6 +28,6 @@ Tools:
 - RSI(14) uses the last **completed** daily bar for both 20- and 55-day entries.
 - Skip a 20-day breakout if the last theoretical 20-day breakout was a winner (or is still open); the 55-day failsafe ignores that filter.
 - Stop = 2N below the latest unit's fill (all units). Exit on a break of the prior 10 completed sessions' low. Exits ignore RSI.
-- Max 5 distinct symbols (holdings + open buys). ≥5% NAV in real cash after every buy, including open-order reservations. ≤19% NAV per symbol. ≤0.5% NAV stop risk per symbol.
+- Max 5 distinct symbols (holdings + open buys). At least $500 in real cash after every buy, including open-order reservations (sizing never spends it). ≤19% NAV per symbol. ≤0.5% NAV stop risk per symbol.
 - If the account already breaks a limit, block new buys; do not liquidate to fix it.
 - Do not create schedulers or auto-trading loops unless the user explicitly asks.

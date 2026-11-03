@@ -54,23 +54,25 @@ def max_buy_shares(
     order_fee_estimate: Decimal = D("0"),
     execution_buffer_bps: Decimal = D("25"),
     max_symbols: int = 5,
-    min_cash_fraction: Decimal = D("0.05"),
+    min_cash_fraction: Decimal = D("0"),
+    min_cash_usd: Decimal = D("500"),
     max_symbol_fraction: Decimal = D("0.19"),
     max_symbol_stop_risk_fraction: Decimal = D("0.005"),
 ) -> Decision:
     """Return upper bound on *additional whole shares* for a BUY proposal.
 
-    The cash reserve is 5% of current NAV, calculated post-execution, with a
-    modest optional fill-price buffer. Risk uses 2N per new share; overnight
+    The cash reserve is a fixed dollar floor (default $500) that must remain
+    after execution and open-order reservations; min_cash_fraction can add a
+    %-of-NAV floor (the larger one wins). Prices carry a small fill buffer. Risk uses 2N per new share; overnight
     gaps can produce losses larger than the assumed stop loss.
     """
     symbol = symbol.upper().strip()
     if not symbol or snapshot.net_liquidation_value <= 0 or expected_fill_price <= 0 or N <= 0:
         raise ValueError("Valid symbol, positive NAV, price and N required")
-    if order_fee_estimate < 0 or execution_buffer_bps < 0:
-        raise ValueError("Fees and execution buffer cannot be negative")
+    if order_fee_estimate < 0 or execution_buffer_bps < 0 or min_cash_usd < 0 or min_cash_fraction < 0:
+        raise ValueError("Fees, execution buffer and cash reserve cannot be negative")
     nav = snapshot.net_liquidation_value
-    cash_floor = nav * min_cash_fraction
+    cash_floor = max(min_cash_usd, nav * min_cash_fraction)
     pending_cost = sum((o.estimated_cost for o in snapshot.pending_buys), D("0"))
     cash_after_existing_orders = snapshot.unencumbered_cash_before_open_buy_reservations - pending_cost
     occupied = {p.symbol.upper() for p in snapshot.positions if p.market_value > 0}
@@ -84,7 +86,7 @@ def max_buy_shares(
     if new_symbol and len(occupied) >= max_symbols:
         return deny("Maximum five occupied symbols including pending buys")
     if cash_after_existing_orders <= cash_floor:
-        return deny("Cash reserve at or below 5% of account NAV")
+        return deny(f"Cash after open buy orders is at or below the ${cash_floor} reserve")
     symbol_market_value = sum((p.market_value for p in snapshot.positions if p.symbol.upper() == symbol), D("0"))
     symbol_pending_cost = sum((o.estimated_cost for o in snapshot.pending_buys if o.symbol.upper() == symbol), D("0"))
     existing_risk = sum((p.risk_at_stop for p in snapshot.positions if p.symbol.upper() == symbol), D("0"))
