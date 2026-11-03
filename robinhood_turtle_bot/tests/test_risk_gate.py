@@ -66,5 +66,20 @@ class TestGates(unittest.TestCase):
         self.assertEqual(on.permitted_shares, 180)   # 19% of 9,500 / $10.025
         self.assertEqual(off.permitted_shares, 189)  # 19% of 10,000 / $10.025
 
+    def test_split_across_open_slots_no_caps(self):
+        p = (Position("A", D("1000")),)
+        s = Snapshot(D("10000"), D("4500"), p, tuple())
+        r = max_buy_shares(s, "B", D("100"), D("1"), max_symbol_fraction=None,
+                           max_symbol_stop_risk_fraction=None, split_cash_across_open_slots=True)
+        self.assertEqual(r.permitted_shares, 9)  # ($4,500 - $500) / 4 free slots / $100.25
+
+    def test_last_slot_spends_down_to_reserve(self):
+        p = tuple(Position(x, D("1000")) for x in "ABCD")
+        s = Snapshot(D("10000"), D("2000"), p, tuple())
+        r = max_buy_shares(s, "E", D("100"), D("1"), max_symbol_fraction=None,
+                           max_symbol_stop_risk_fraction=None, split_cash_across_open_slots=True)
+        self.assertEqual(r.permitted_shares, 14)
+        self.assertGreaterEqual(r.remaining_cash_after_proposed_purchase, D("500"))
+
 if __name__ == '__main__':
     unittest.main()

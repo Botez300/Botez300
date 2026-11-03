@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal, ROUND_FLOOR
-from typing import Tuple
+from typing import Optional, Tuple
 
 D = Decimal
 
@@ -57,8 +57,9 @@ def max_buy_shares(
     min_cash_fraction: Decimal = D("0"),
     min_cash_usd: Decimal = D("500"),
     exclude_reserve_from_sizing_nav: bool = True,
-    max_symbol_fraction: Decimal = D("0.19"),
-    max_symbol_stop_risk_fraction: Decimal = D("0.005"),
+    max_symbol_fraction: Optional[Decimal] = D("0.19"),
+    max_symbol_stop_risk_fraction: Optional[Decimal] = D("0.005"),
+    split_cash_across_open_slots: bool = False,
 ) -> Decision:
     """Return upper bound on *additional whole shares* for a BUY proposal.
 
@@ -97,15 +98,20 @@ def max_buy_shares(
     existing_risk += sum((o.reserved_risk_at_stop for o in snapshot.pending_buys if o.symbol.upper() == symbol), D("0"))
     buffered_price = expected_fill_price * (D("1") + execution_buffer_bps / D("10000"))
     cash_spendable = max(D("0"), cash_after_existing_orders - cash_floor - order_fee_estimate)
-    symbol_spendable = max(D("0"), sizing_nav * max_symbol_fraction - symbol_market_value - symbol_pending_cost)
-    symbol_risk_left = max(D("0"), sizing_nav * max_symbol_stop_risk_fraction - existing_risk)
+    if split_cash_across_open_slots:
+        # Spread deployable cash evenly over the slots still free (this one included).
+        free_slots = max_symbols - len(occupied) + (0 if new_symbol else 1)
+        cash_spendable = cash_spendable / max(1, free_slots)
+    big = D("1e18")  # a disabled (None) cap never binds
+    symbol_spendable = big if max_symbol_fraction is None else max(D("0"), sizing_nav * max_symbol_fraction - symbol_market_value - symbol_pending_cost)
+    symbol_risk_left = big if max_symbol_stop_risk_fraction is None else max(D("0"), sizing_nav * max_symbol_stop_risk_fraction - existing_risk)
     risk_per_share = D("2") * N
     cash_shares = int((cash_spendable / buffered_price).to_integral_value(rounding=ROUND_FLOOR))
     allocation_shares = int((symbol_spendable / buffered_price).to_integral_value(rounding=ROUND_FLOOR))
     risk_shares = int((symbol_risk_left / risk_per_share).to_integral_value(rounding=ROUND_FLOOR))
     shares = max(0, min(cash_shares, allocation_shares, risk_shares))
     if shares == 0:
-        return deny("Cash, 19% symbol allocation, or 0.5% symbol risk gate prevents purchase")
+        return deny("Cash reserve, symbol allocation, or symbol risk gate prevents purchase")
     remainder = cash_after_existing_orders - shares * buffered_price - order_fee_estimate
     return Decision(shares, "Eligible for proposal only — not an authorization to trade", remainder, cash_floor, slot_count)
 

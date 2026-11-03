@@ -28,6 +28,6 @@ Tools:
 - RSI(14) uses the last **completed** daily bar for both 20- and 55-day entries.
 - Skip a 20-day breakout if the last theoretical 20-day breakout was a winner (or is still open); the 55-day failsafe ignores that filter.
 - Stop = 2N below the latest unit's fill (all units). Exit on a break of the prior 10 completed sessions' low. Exits ignore RSI.
-- Max 5 distinct symbols (holdings + open buys). At least $500 in real cash after every buy, including open-order reservations (sizing never spends it). ≤19% per symbol and ≤0.5% stop risk per symbol, both on NAV minus the $500 reserve.
+- Max 5 distinct symbols (holdings + open buys). At least $500 in real cash after every buy, including open-order reservations (sizing never spends it). Each buy gets an even share of deployable cash across free slots (19% / 0.5% per-symbol caps are off), so once all 5 are filled about $500 is left. Size with `expected_fill_price` = the order's limit price, cheapest-per-share names first so leftovers flow to the rest.
 - If the account already breaks a limit, block new buys; do not liquidate to fix it.
 - Do not create schedulers or auto-trading loops unless the user explicitly asks.

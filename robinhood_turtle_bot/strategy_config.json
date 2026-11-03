@@ -29,13 +29,15 @@
     "min_post_trade_cash_usd": 500,
     "min_post_trade_cash_as_fraction_of_net_liquidation_value": 0,
     "exclude_cash_reserve_from_sizing_nav": true,
-    "max_gross_market_value_per_symbol_fraction_of_net_liquidation_value": 0.19,
-    "max_risk_at_stop_per_symbol_fraction_of_net_liquidation_value": 0.005,
+    "split_deployable_cash_evenly_across_open_slots": true,
+    "max_gross_market_value_per_symbol_fraction_of_net_liquidation_value": null,
+    "max_risk_at_stop_per_symbol_fraction_of_net_liquidation_value": null,
     "no_margin_borrowing": true,
     "include_all_existing_equity_and_etf_positions": true,
     "reserve_open_buy_orders": true,
     "count_open_buy_order_symbols_as_occupied_slots": true,
     "exit_orders_are_allowed_even_when_entry_gates_fail": true,
     "never_liquidate_existing_positions_only_to_rebuild_cash_floor_without_separate_authorization": true
-  }
+  },
+  "portfolio_gates_notes": "Per-symbol 19% and 0.5% caps disabled (null) by user on 2026-11-02: deploy all cash except the $500 reserve, split evenly across open symbol slots."
 }

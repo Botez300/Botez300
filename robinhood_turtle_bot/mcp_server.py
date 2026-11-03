@@ -64,7 +64,7 @@ TOOLS = [
     },
     {
         "name": "turtle_size_buy",
-        "description": "Fail-closed max whole shares for a proposed BUY under the account gates: 5 occupied symbols (holdings + open buy orders), >=$500 cash reserve left after purchase, <=19% and <=0.5% stop risk per symbol, both measured on NAV minus the $500 reserve. Proposal only, not authorization.",
+        "description": "Fail-closed max whole shares for a proposed BUY under the account gates: 5 occupied symbols (holdings + open buy orders), >=$500 cash reserve left after purchase; deployable cash split evenly across open slots (per-symbol caps per strategy config). Pass expected_fill_price = the order's limit price. Proposal only, not authorization.",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -95,6 +95,10 @@ def _d(x) -> Decimal:
     return Decimal(str(x or 0))
 
 
+def _opt(x):
+    return None if x is None else _d(x)
+
+
 def call_tool(name: str, args: dict) -> dict:
     if name == "turtle_strategy_config":
         return signals.load_config()
@@ -122,8 +126,9 @@ def call_tool(name: str, args: dict) -> dict:
             min_cash_fraction=_d(g.get("min_post_trade_cash_as_fraction_of_net_liquidation_value", 0)),
             min_cash_usd=_d(g.get("min_post_trade_cash_usd", 500)),
             exclude_reserve_from_sizing_nav=bool(g.get("exclude_cash_reserve_from_sizing_nav", True)),
-            max_symbol_fraction=_d(g["max_gross_market_value_per_symbol_fraction_of_net_liquidation_value"]),
-            max_symbol_stop_risk_fraction=_d(g["max_risk_at_stop_per_symbol_fraction_of_net_liquidation_value"]),
+            max_symbol_fraction=_opt(g.get("max_gross_market_value_per_symbol_fraction_of_net_liquidation_value")),
+            max_symbol_stop_risk_fraction=_opt(g.get("max_risk_at_stop_per_symbol_fraction_of_net_liquidation_value")),
+            split_cash_across_open_slots=bool(g.get("split_deployable_cash_evenly_across_open_slots", False)),
         )
         return {k: (str(v) if isinstance(v, Decimal) else v) for k, v in dec.__dict__.items()}
     raise KeyError(f"Unknown tool: {name}")

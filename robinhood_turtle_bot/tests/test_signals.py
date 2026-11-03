@@ -112,7 +112,7 @@ class TestServer(unittest.TestCase):
         tools = json.loads(out[1])["result"]["tools"]
         self.assertEqual(len(tools), 4)
         sized = json.loads(json.loads(out[2])["result"]["content"][0]["text"])
-        self.assertEqual(sized["permitted_shares"], 4)
+        self.assertEqual(sized["permitted_shares"], 21)  # ($6,000 - $500) / 5 slots / $50.125
 
 
 if __name__ == "__main__":
