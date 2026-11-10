@@ -3,6 +3,13 @@
     "luxalgo": {
       "type": "http",
       "url": "https://mcp.luxalgo.com/mcp"
+    },
+    "omniroute": {
+      "type": "http",
+      "url": "http://localhost:20128/api/mcp/stream",
+      "headers": {
+        "Authorization": "Bearer ${OMNIROUTE_API_KEY:-}"
+      }
     }
   }
 }
