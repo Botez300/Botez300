@@ -1,0 +1,13 @@
+[project]
+name = "legion-csp-paper"
+version = "1.1.0"
+description = "Robinhood-connected (read-only) leveraged-ETF cash-secured-put PAPER trading engine"
+requires-python = ">=3.12"
+dependencies = ["pandas>=2.2", "numpy>=1.26", "PyYAML>=6.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

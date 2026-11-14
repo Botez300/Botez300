@@ -1,0 +1,134 @@
+# LEGION QUANT CAPITAL — Robinhood Leveraged ETF CSP Engine v1.1
+# PAPER TRADING EDITION.
+#
+# There is intentionally NO setting in this file (or anywhere else) that
+# enables live trading. Execution mode is hard-coded in src/safety.py.
+# All values below are PROVISIONAL research settings until validated.
+
+universe:
+  market_benchmark: SPY
+  # Each pair = benchmark index ETF + bullish 3x ETF + bearish 3x ETF.
+  pairs:
+    - {name: NASDAQ100, benchmark: QQQ,  bull: TQQQ, bear: SQQQ, group: broad, tier: primary}
+    - {name: SP500,     benchmark: SPY,  bull: UPRO, bear: SPXU, group: broad, tier: primary}
+    - {name: SEMIS,     benchmark: SOXX, bull: SOXL, bear: SOXS, group: semis, tier: secondary}
+  # Leveraged single-stock ETFs are excluded initially.
+  allow_opposing_pair_positions: false   # never short puts on TQQQ and SQQQ together
+
+regime:
+  sma_fast: 50
+  sma_slow: 200
+  rsi_period: 14
+  rsi_threshold: 50
+  require_monthly_rsi: false     # optional; measured in backtests
+  etf_trend_sma: 50              # ETF confirms its own trend: close > SMA50 and SMA50 rising
+  etf_trend_slope_days: 10
+  rs_sma: 50                     # bull/bear price-ratio vs its SMA = relative strength
+  rs_roc_days: 20
+  whipsaw_window: 20             # benchmark SMA200 crossings inside window
+  whipsaw_max_crosses: 3
+  vol_window: 20
+  vol_baseline_window: 252
+  vol_spike_ratio: 2.0           # 20d realized vol / 1y median realized vol
+  max_bar_staleness_days: 4      # calendar days between last completed bar and as-of date
+
+screener:
+  dte_min: 21
+  dte_max: 35
+  delta_bands:
+    broad: [0.10, 0.20]
+    semis: [0.08, 0.15]
+  preferred_min_open_interest: 500
+  preferred_max_spread_pct: 0.10       # of midpoint
+  hard_min_open_interest: 50           # research assumption: below this, unusable
+  hard_max_spread_pct: 0.35            # research assumption: wider = no valid market
+  max_quote_age_minutes: 15            # for a simulated FILL during regular hours
+  max_proposal_quote_age_hours: 96     # quotes from the last completed session may seed proposals
+  weights:                              # ranking weights (sum need not be 1)
+    trend: 0.25
+    liquidity: 0.20
+    premium: 0.20
+    delta: 0.15
+    correlation: 0.10
+    event_vol: 0.10
+  top_n: 3
+
+execution:
+  # Conservative fill model (research assumption).
+  # Sell price = bid + aggressiveness * (mid - bid), capped by Robinhood's
+  # high_fill_rate_sell_price when supplied, rounded DOWN to tick.
+  sell_aggressiveness: 0.25
+  buy_aggressiveness: 0.25
+  slippage_ticks: 1
+  fee_per_contract: 0.03     # research assumption (regulatory/clearing pass-through); commissions $0
+  fee_per_share_sale: 0.0
+  min_bid_size_multiple: 1   # bid_size must be >= contracts * this
+
+management:
+  profit_target_pct: 0.50          # close when 50% of credit retained (range 0.50–0.70)
+  reassess_dte: 7                  # close at or below 7 DTE
+  stop_flag_multiple: 2.0          # flag when close cost >= 2x credit
+  stop_action: flag                # flag | close   (backtests compare both)
+  close_on_regime_loss: true
+  early_assignment_extrinsic: 0.05 # assume early assignment when extrinsic < this and DTE <= 5
+  assigned_shares_policy: liquidate_next_open   # liquidate_next_open | hold_until_regime_exit
+
+portfolios:
+  A:
+    name: "Portfolio A — $5,000"
+    starting_cash: 5000
+    max_open_contracts: 1
+    max_contracts_if_validated: 1
+    max_collateral_per_contract_pct: 0.40
+    max_collateral_per_contract_pct_multi: 0.40
+    max_total_collateral_pct: 0.40
+    min_unencumbered_cash_pct: 0.60
+  B:
+    name: "Portfolio B — $10,000"
+    starting_cash: 10000
+    max_open_contracts: 1
+    max_contracts_if_validated: 2     # only after paper validation (see risk.two_contract_unlock)
+    max_collateral_per_contract_pct: 0.40
+    max_collateral_per_contract_pct_multi: 0.20
+    max_total_collateral_pct: 0.40
+    min_unencumbered_cash_pct: 0.60
+
+risk:
+  daily_drawdown_suspend: 0.02
+  weekly_drawdown_review: 0.04
+  peak_drawdown_halt: 0.08
+  max_pair_correlation: 0.80       # second simultaneous position must be below this (60d returns)
+  correlation_window: 60
+  two_contract_unlock:             # Portfolio B paper-validation gate
+    min_closed_trades: 12
+    min_months: 3
+    max_drawdown: 0.08
+    min_profit_factor: 1.2
+
+backtest:
+  start: "2018-01-01"
+  end: "2026-11-13"
+  iv_model:                        # HYPOTHETICAL synthetic-option model (no historical chains available)
+    rv_window: 20
+    iv_rv_ratio: 1.0               # 2026-11-13 snapshot showed 0.57-0.75 during a vol spike; 1.0 + sensitivity runs
+    iv_floor: 0.20
+    # iv(K) = iv_atm * (1 + skew * ln(K/S)). Snapshot fit: bull ETFs -0.4..-2.3, inverse ETFs +0.2..+0.9
+    skew_bull: -1.2
+    skew_bear: 0.4
+    risk_free_rate: 0.04
+  spread_model:
+    pct_of_mid: 0.15               # snapshot median in delta band was 28-118% at Friday close; stress at 0.30
+    min_width: 0.05
+  halt_review_days: 20             # backtest stand-in for a manual review after an 8% halt
+  cash_benchmark_annual: 0.0       # conservative; idle simulated cash earns nothing
+  walk_forward:
+    train_years: 3
+    grid:
+      delta_target: [0.12, 0.15, 0.18]
+      profit_target_pct: [0.50, 0.70]
+      stop_action: [flag, close]
+
+reports:
+  monthly_stretch_target: 0.05     # research objective, NOT a trade requirement
+  projection_years: 15
+  projection_rates: [0.0, 0.01, 0.02, 0.03, 0.05]

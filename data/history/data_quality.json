@@ -1,0 +1,143 @@
+{
+ "QQQ": {
+  "repaired_adjusted_bars": [],
+  "splits": []
+ },
+ "SPY": {
+  "repaired_adjusted_bars": [],
+  "splits": []
+ },
+ "SOXX": {
+  "repaired_adjusted_bars": [],
+  "splits": [
+   {
+    "date": "2024-03-07",
+    "price_factor": 0.3333333333333333
+   },
+   {
+    "date": "2026-11-05",
+    "price_factor": 0.3333333333333333
+   }
+  ]
+ },
+ "TQQQ": {
+  "repaired_adjusted_bars": [],
+  "splits": [
+   {
+    "date": "2017-01-12",
+    "price_factor": 0.5
+   },
+   {
+    "date": "2018-05-24",
+    "price_factor": 0.3333333333333333
+   },
+   {
+    "date": "2021-01-21",
+    "price_factor": 0.5
+   },
+   {
+    "date": "2022-01-13",
+    "price_factor": 0.5
+   },
+   {
+    "date": "2025-11-20",
+    "price_factor": 0.5
+   }
+  ]
+ },
+ "SQQQ": {
+  "repaired_adjusted_bars": [],
+  "splits": [
+   {
+    "date": "2017-01-12",
+    "price_factor": 4.0
+   },
+   {
+    "date": "2020-08-18",
+    "price_factor": 5.0
+   },
+   {
+    "date": "2022-01-13",
+    "price_factor": 5.0
+   },
+   {
+    "date": "2024-11-07",
+    "price_factor": 5.0
+   },
+   {
+    "date": "2025-11-20",
+    "price_factor": 5.0
+   }
+  ]
+ },
+ "UPRO": {
+  "repaired_adjusted_bars": [],
+  "splits": [
+   {
+    "date": "2018-05-24",
+    "price_factor": 0.3333333333333333
+   },
+   {
+    "date": "2022-01-13",
+    "price_factor": 0.5
+   }
+  ]
+ },
+ "SPXU": {
+  "repaired_adjusted_bars": [],
+  "splits": [
+   {
+    "date": "2021-01-20",
+    "price_factor": 5.0
+   },
+   {
+    "date": "2024-04-10",
+    "price_factor": 5.0
+   },
+   {
+    "date": "2025-11-20",
+    "price_factor": 4.0
+   }
+  ]
+ },
+ "SOXL": {
+  "repaired_adjusted_bars": [],
+  "splits": [
+   {
+    "date": "2021-03-02",
+    "price_factor": 0.06666666666666667
+   }
+  ]
+ },
+ "SOXS": {
+  "repaired_adjusted_bars": [
+   "2022-03-15"
+  ],
+  "splits": [
+   {
+    "date": "2017-05-01",
+    "price_factor": 5.0
+   },
+   {
+    "date": "2019-06-28",
+    "price_factor": 10.0
+   },
+   {
+    "date": "2020-08-28",
+    "price_factor": 25.0
+   },
+   {
+    "date": "2024-04-15",
+    "price_factor": 10.0
+   },
+   {
+    "date": "2026-03-05",
+    "price_factor": 20.0
+   },
+   {
+    "date": "2026-07-14",
+    "price_factor": 10.0
+   }
+  ]
+ }
+}

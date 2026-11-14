@@ -1,0 +1,16 @@
+{
+  "source_tool": "get_equity_quotes",
+  "captured_at": "2026-11-14T20:33:00Z",
+  "note": "Transcribed verbatim from Robinhood MCP get_equity_quotes (fields needed by the engine). Captured on Saturday; last regular-session trade is 2026-11-13.",
+  "quotes": [
+    {"symbol": "TQQQ", "last_trade_price": 57.67,   "last_trade_time": "2026-11-13T20:59:59Z", "bid": 56.29,  "ask": 56.59,  "quote_time": "2026-11-14T01:00:00Z", "previous_close": 59.88,  "previous_close_date": "2026-11-12", "state": "active"},
+    {"symbol": "SQQQ", "last_trade_price": 42.4741, "last_trade_time": "2026-11-13T20:59:59Z", "bid": 43.40,  "ask": 43.53,  "quote_time": "2026-11-14T01:00:00Z", "previous_close": 40.93,  "previous_close_date": "2026-11-12", "state": "active"},
+    {"symbol": "UPRO", "last_trade_price": 138.515, "last_trade_time": "2026-11-13T20:59:59Z", "bid": 124.93, "ask": 148.30, "quote_time": "2026-11-14T01:00:00Z", "previous_close": 140.23, "previous_close_date": "2026-11-12", "state": "active"},
+    {"symbol": "SPXU", "last_trade_price": 35.80,   "last_trade_time": "2026-11-13T20:59:59Z", "bid": 33.27,  "ask": 37.00,  "quote_time": "2026-11-14T01:00:00Z", "previous_close": 35.36,  "previous_close_date": "2026-11-12", "state": "active"},
+    {"symbol": "SOXL", "last_trade_price": 58.3499, "last_trade_time": "2026-11-13T20:59:59Z", "bid": 55.53,  "ask": 55.75,  "quote_time": "2026-11-14T01:00:00Z", "previous_close": 65.53,  "previous_close_date": "2026-11-12", "state": "active"},
+    {"symbol": "SOXS", "last_trade_price": 50.78,   "last_trade_time": "2026-11-13T20:59:59Z", "bid": 52.50,  "ask": 53.04,  "quote_time": "2026-11-14T01:00:00Z", "previous_close": 45.72,  "previous_close_date": "2026-11-12", "state": "active"},
+    {"symbol": "QQQ",  "last_trade_price": 679.90,  "last_trade_time": "2026-11-13T20:59:59Z", "bid": 674.19, "ask": 674.38, "quote_time": "2026-11-14T01:00:00Z", "previous_close": 688.17, "previous_close_date": "2026-11-12", "state": "active"},
+    {"symbol": "SPY",  "last_trade_price": 754.25,  "last_trade_time": "2026-11-13T20:59:59Z", "bid": 748.70, "ask": 749.74, "quote_time": "2026-11-14T01:00:00Z", "previous_close": 757.12, "previous_close_date": "2026-11-12", "state": "active"},
+    {"symbol": "SOXX", "last_trade_price": 149.34,  "last_trade_time": "2026-11-13T20:59:59Z", "bid": 146.52, "ask": 147.09, "quote_time": "2026-11-14T01:00:00Z", "previous_close": 154.99, "previous_close_date": "2026-11-12", "state": "active"}
+  ]
+}
