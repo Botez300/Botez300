@@ -1,0 +1,7 @@
+{
+  "as_of": "2026-11-14",
+  "captured_at": "2026-11-14T20:35:00Z",
+  "source": "Robinhood Trading MCP (official) via Claude Code, read-only",
+  "source_tools": ["get_equity_quotes", "get_option_chains", "get_option_instruments", "get_option_quotes", "get_equity_historicals"],
+  "notes": "Captured Saturday; market closed. Option quotes last updated 2026-11-13T20:59:59Z (Friday close). Fills are NOT permitted from this snapshot (stale for execution); proposals only."
+}

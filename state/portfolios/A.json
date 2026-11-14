@@ -1,0 +1,46 @@
+{
+ "portfolio_id": "A",
+ "name": "Portfolio A \u2014 $5,000",
+ "starting_cash": 5000.0,
+ "cash": 5000.0,
+ "created_at": "2026-11-14T20:51:52+00:00",
+ "puts": [],
+ "shares": [],
+ "orders": [],
+ "equity_history": [
+  {
+   "date": "2026-11-14",
+   "equity": 5000.0,
+   "cash": 5000.0,
+   "reserved": 0,
+   "liability": 0,
+   "shares_value": 0,
+   "net_flows": 0,
+   "note": "session"
+  }
+ ],
+ "external_flows": [],
+ "realized_pnl": 0.0,
+ "fees_paid": 0.0,
+ "high_water_mark": 5000.0,
+ "halted": false,
+ "review_required": false,
+ "validated_two_contracts": false,
+ "risk_log": [
+  {
+   "date": "2026-11-14",
+   "daily_dd": 0.0,
+   "weekly_dd": 0.0,
+   "peak_dd": 0.0,
+   "notes": []
+  },
+  {
+   "date": "2026-11-14",
+   "daily_dd": 0.0,
+   "weekly_dd": 0.0,
+   "peak_dd": 0.0,
+   "notes": []
+  }
+ ],
+ "label": "PAPER"
+}

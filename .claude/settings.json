@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "deny": [
+      "mcp__Robinhood_Agentic_Trading__place_option_order",
+      "mcp__Robinhood_Agentic_Trading__place_equity_order",
+      "mcp__Robinhood_Agentic_Trading__place_crypto_order",
+      "mcp__Robinhood_Agentic_Trading__place_advanced_order",
+      "mcp__Robinhood_Agentic_Trading__cancel_option_order",
+      "mcp__Robinhood_Agentic_Trading__cancel_equity_order",
+      "mcp__Robinhood_Agentic_Trading__cancel_crypto_order",
+      "mcp__Robinhood_Agentic_Trading__cancel_advanced_order",
+      "mcp__Robinhood_Agentic_Trading__cancel_option_exercise",
+      "mcp__Robinhood_Agentic_Trading__exercise_option",
+      "mcp__Robinhood_Agentic_Trading__review_option_order",
+      "mcp__Robinhood_Agentic_Trading__review_equity_order",
+      "mcp__Robinhood_Agentic_Trading__review_advanced_order",
+      "mcp__Robinhood_Agentic_Trading__preview_crypto_order",
+      "mcp__Robinhood_Agentic_Trading__decline_trade_approval"
+    ]
+  }
+}
