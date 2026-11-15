@@ -15,7 +15,7 @@ Status as of 2026-11-15. One vertical slice at a time; a milestone closes only w
 | 8 | Production hardening | Planned |
 
 ## Carry-over from Milestone 1 (do first)
-1. Run `docker compose up --build` and the e2e suite on a machine with Docker (not possible in the build sandbox).
+1. ~~Run the compose stack and e2e suite under Docker~~ — done by the CI `e2e` job on PR #5.
 2. With real credentials, verify the Alpaca and Polygon adapters against the live APIs; record results.
 3. Persist chart drawings and layouts per user (API + table) instead of browser storage.
 

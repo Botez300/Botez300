@@ -5,7 +5,7 @@ _Last verified: 2026-11-15._
 ## Where things stand
 Milestones 0 and 1 are implemented. The terminal runs end-to-end in **demo mode** (synthetic data, labelled
 `SIMULATED`). Next task: Milestone 2, item 1 in `docs/ROADMAP.md` (relative strength + cross-symbol indicators),
-after the three carry-over checks listed there.
+after the carry-over checks listed there.
 
 ## Implemented and verified
 | Area | What works | Verified by |
@@ -27,8 +27,9 @@ ruff, mypy and tsc clean; `npm audit --omit=dev` 0 vulnerabilities.
   (no credentials; vendor hosts blocked in the build environment).
 
 ## Not verified / known limitations
-- `docker-compose.yml`, both Dockerfiles and the GitHub Actions workflow were written but **not executed**: the build
-  sandbox has no Docker daemon. The verified startup path is `make dev` against a local PostgreSQL.
+- The Docker stack has only been run in CI (GitHub Actions run 43672933104 on commit ceeef4a: `python`, `web` and
+  `e2e` jobs green; `e2e` builds `docker compose` and runs the 6 browser flows against it). It has not been run on a
+  developer machine; the build sandbox has no Docker daemon.
 - Daily bars only (weekly/monthly derived). No intraday, fundamentals, options, corporate-action events or index constituents.
 - Bars are cached in API process memory (5 min TTL); no shared bar store or ingestion worker yet.
 - Vela draws the newest bar as a forming candle; on end-of-day data that bar is in fact complete.

@@ -10,7 +10,7 @@ A milestone is complete when every criterion is met and the evidence is reproduc
 ## Milestone 1 — functional MVP
 | # | Criterion | Evidence | Met |
 | --- | --- | --- | --- |
-| 1 | Repeatable local startup | `make setup && make dev`; `docker-compose.yml` | ✅ Makefile path verified. ⚠️ Compose files written but **not executed** (no Docker daemon in the build sandbox) |
+| 1 | Repeatable local startup | `make setup && make dev`; `docker-compose.yml` | ✅ Local path verified in the sandbox; compose stack built and exercised by the CI `e2e` job |
 | 2 | Persistent database with migrations | Alembic `0001`; `test_migrations_match_models` on PostgreSQL 16 | ✅ |
 | 3 | Secure authentication | `tests/python/test_api.py` auth tests | ✅ for the MVP scope; gaps listed in SECURITY.md |
 | 4 | Working dashboard | e2e "registration opens the Command Center…" | ✅ |
@@ -21,7 +21,7 @@ A milestone is complete when every criterion is met and the evidence is reproduc
 | 9 | Configurable technical scanner with real results | `test_scanner.py`; e2e re-checks a result row against its rules | ✅ |
 | 10 | Symbol search | API test + e2e | ✅ |
 | 11 | Original navigation; every page works end-to-end | 6 e2e flows, no page errors or 5xx | ✅ |
-| 12 | Automated tests and CI definition | 184 Python tests, 6 e2e; `.github/workflows/ci.yml` | ✅ tests. ⚠️ CI workflow not yet run on GitHub |
+| 12 | Automated tests and CI definition | 184 Python tests, 6 e2e; `.github/workflows/ci.yml` | ✅ CI green on PR #5 (python, web, e2e) |
 
 ## Milestone 2 — advanced technical analysis (draft)
 - Every new detector has a documented rule, an algorithm version and a test that it emits nothing before its

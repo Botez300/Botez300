@@ -14,7 +14,7 @@ Resume by reading `PROJECT_STATUS.md` (what is verified) and `docs/ROADMAP.md` (
 ## Commands
 - `make setup | dev | test | test-pg | lint | e2e` (see `Makefile`). Python venv is `.venv`.
 - New migration: `cd apps/api && ../../.venv/bin/alembic revision --autogenerate -m "..."`; `make test-pg` checks drift.
-- This sandbox has no Docker daemon: start PostgreSQL with `service postgresql start`; the compose stack is untested here.
+- This sandbox has no Docker daemon: start PostgreSQL with `service postgresql start`; the compose stack is exercised only by the CI `e2e` job.
 
 ## Conventions
 - Single source of truth for indicators: `services/indicators/legion_indicators/registry.py`. The API serves the catalog;
