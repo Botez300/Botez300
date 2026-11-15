@@ -1,0 +1,59 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: legion, POSTGRES_PASSWORD: legion, POSTGRES_DB: legion_test }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U legion" --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip }
+      - run: pip install -e services/indicators -e services/data-ingestion -e services/market-scanner -e apps/api -r requirements-dev.txt
+      - run: ruff check services apps/api tests/python
+      - run: mypy services/indicators/legion_indicators services/data-ingestion/legion_data services/market-scanner/legion_scanner apps/api/legion_api
+      - name: Tests (SQLite)
+        run: python -m pytest -q
+      - name: Tests (PostgreSQL, incl. migrations)
+        run: python -m pytest -q
+        env:
+          TEST_DATABASE_URL: postgresql+psycopg://legion:legion@localhost:5432/legion_test
+
+  web:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: apps/web } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: apps/web/package-lock.json }
+      - run: npm ci --no-audit --no-fund
+      - run: npx tsc --noEmit
+      - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [python, web]
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up --build -d --wait
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --no-save playwright@1 && npx playwright install --with-deps chromium
+        working-directory: tests/e2e
+      - run: npx playwright test --trace off
+        working-directory: tests/e2e
+      - if: failure()
+        run: docker compose logs --tail=200

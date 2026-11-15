@@ -1,0 +1,27 @@
+# Workspace-level tooling config. Python packages live in apps/api and services/*.
+[tool.ruff]
+line-length = 125
+target-version = "py311"
+extend-exclude = ["apps/api/alembic/versions", "apps/web"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E741", "B008", "B905"]  # l/h/o/c are domain names; FastAPI Depends() defaults; zip strictness
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["E501"]
+"services/indicators/legion_indicators/registry.py" = ["E501"]
+"services/data-ingestion/legion_data/demo.py" = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["legion_api", "legion_data", "legion_indicators", "legion_scanner", "conftest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/python"]
+pythonpath = ["tests/python"]
+filterwarnings = ["ignore::DeprecationWarning:starlette.*", "ignore::DeprecationWarning:fastapi.*"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+check_untyped_defs = true
