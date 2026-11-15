@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0a0d12;
+  --color-panel: #10141b;
+  --color-raised: #161b24;
+  --color-line: #222a36;
+  --color-dim: #7d8898;
+  --color-text: #d9dee7;
+  --color-brass: #e3b04b;
+  --color-up: #3fb68b;
+  --color-down: #e5646e;
+  --color-sim: #a78bfa;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--color-ink);
+  color: var(--color-text);
+  color-scheme: dark;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 1px;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-md border border-line bg-panel;
+  }
+  .panel-title {
+    @apply border-b border-line px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-dim;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded border border-line bg-raised px-2.5 py-1.5 text-xs font-medium text-text transition-colors hover:border-dim disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply border-brass bg-brass text-ink hover:bg-brass/90 hover:border-brass;
+  }
+  .btn-on {
+    @apply border-brass text-brass;
+  }
+  .input {
+    @apply rounded border border-line bg-ink px-2 py-1.5 text-xs text-text placeholder:text-dim;
+  }
+  .num {
+    @apply font-mono tabular-nums;
+  }
+  .th {
+    @apply px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-dim;
+  }
+  .td {
+    @apply px-3 py-1.5 text-xs;
+  }
+}
