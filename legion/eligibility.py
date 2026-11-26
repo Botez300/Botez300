@@ -6,7 +6,9 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 SCHEMA_PATH = os.path.join(os.path.dirname(__file__), "..", "schemas", "legion_signal_v1.schema.json")
 SCHEMA = json.load(open(SCHEMA_PATH))
+SCHEMA_V11 = json.load(open(os.path.join(os.path.dirname(SCHEMA_PATH), "legion_signal_v1_1.schema.json")))
 _V = Draft202012Validator(SCHEMA, format_checker=FormatChecker())
+_V11 = Draft202012Validator(SCHEMA_V11, format_checker=FormatChecker())
 MANDATORY = ["scanner_rules_version", "generated_at", "market_data_as_of", "valid_until", "market_regime"]
 INJECTION = [re.compile(p, re.I) for p in (
     r"ignore (all |any |the )?(previous|prior|above)", r"disregard", r"system prompt", r"you are (now )?(an?|the) ",
@@ -66,7 +68,8 @@ def evaluate_report(raw: bytes, filename: str, now: datetime, expected_size=None
     try: doc = json.loads(raw.decode("utf-8"))
     except Exception as e:
         d.reasons.append(f"INVALID_JSON {e}"); d.deferred = age_s < settle_s; return d
-    errs = sorted(_V.iter_errors(doc), key=lambda e: list(e.path))
+    v = _V11 if isinstance(doc, dict) and doc.get("schema_version") == "1.1" else _V
+    errs = sorted(v.iter_errors(doc), key=lambda e: list(e.path))
     d.schema_valid = not errs
     d.reasons += [f"SCHEMA {'/'.join(map(str, e.path)) or '<root>'}: {e.message}"[:200] for e in errs[:25]]
     if not d.schema_valid: return d

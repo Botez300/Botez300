@@ -45,5 +45,6 @@
     "defined": false,
     "note": "Separate from mechanical qualification; rules not yet specified by owner."
   },
-  "exit_rules": []
+  "exit_rules": [],
+  "classification": "EXACT_PLATFORM"
 }

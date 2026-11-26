@@ -11,9 +11,11 @@ from .strategies import verify_candidate
 
 class Orchestrator:
     def __init__(self, ledger, broker: PaperBroker, market, client, decisions_path, spec_dir=None, sp=SystemParams(),
-                 option_kinds=(), limits=Limits(), rules=OptionRules(), alert=lambda *a, **k: None):
+                 option_kinds=(), limits=Limits(), rules=OptionRules(), alert=lambda *a, **k: None,
+                 variants=None, require_report_evidence=False):
         self.ledger, self.b, self.m, self.rh = ledger, broker, market, client
         self.dp, self.spec_dir, self.sp, self.kinds, self.L, self.R, self.alert = decisions_path, spec_dir, sp, option_kinds, limits, rules, alert
+        self.variants, self.require_evidence = variants or {}, require_report_evidence
     def _log(self, rec):
         with open(self.dp, "a") as f: f.write(json.dumps(rec, default=str) + "\n")
 
@@ -34,13 +36,19 @@ class Orchestrator:
         return d
 
     def _candidate(self, c, cd, now):
-        if not cd.eligible: return {"outcome": "NOT_ELIGIBLE", "reasons": cd.reasons}
+        from .evidence import audit_report_candidate
+        audit = audit_report_candidate(c, now)
+        if not cd.eligible: return {"outcome": "NOT_ELIGIBLE", "reasons": cd.reasons, "evidence_audit": audit}
+        if self.require_evidence and any(a["status"] != "VERIFIED" for a in audit):
+            return {"outcome": "NOT_ELIGIBLE", "reasons": ["REPORT_CRITERIA_EVIDENCE_UNVERIFIED"], "evidence_audit": audit}
         if self.b.has_signal(c["signal_id"]): return {"outcome": "DUPLICATE_SIGNAL"}
         h = halt_reason(self.b.account(), self.L)
         if h: self.alert("HALT", h); return {"outcome": "BLOCKED", "reasons": [h]}
         try: snap = self.m.snapshot(c["ticker"], now)
         except Exception as e: self.alert("DATA_FAILURE", f"{c['ticker']}: {e}"); return {"outcome": "BLOCKED", "reasons": [f"MARKET_DATA_UNAVAILABLE {type(e).__name__}"]}
-        ok, crit, bad = verify_candidate(c, snap, self.spec_dir, self.sp) if self.spec_dir else verify_candidate(c, snap, sp=self.sp)
+        var = self.variants.get(c["originating_strategy"])
+        if var: ok, crit, bad = verify_candidate(c, snap, sp=self.sp, variant=var)
+        else: ok, crit, bad = verify_candidate(c, snap, self.spec_dir, self.sp) if self.spec_dir else verify_candidate(c, snap, sp=self.sp)
         if not ok: return {"outcome": "VERIFICATION_FAILED", "reasons": bad, "criteria": crit}
         acct, px = self.b.account(), snap.quote.price
         sz = size_stock(acct, c["ticker"], px, c["technical_invalidation"], c["trade_direction"], self.L)

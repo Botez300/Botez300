@@ -34,5 +34,6 @@
     "note": "Separate from mechanical qualification; rules not yet specified by owner."
   },
   "exit_rules": [],
-  "execution_controls": "chasing/extension rejected separately at entry, not as mechanical gates"
+  "execution_controls": "chasing/extension rejected separately at entry, not as mechanical gates",
+  "classification": "EXACT_PLATFORM"
 }

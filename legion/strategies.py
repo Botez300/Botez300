@@ -119,10 +119,14 @@ STRATEGIES = {
  "MAGIC_FORMULA": (["max_combined_rank", "rebalance_days"], v_magic),
  "PARABOLIC_MOMENTUM": (["momentum_lookback_days", "min_return_pct", "breakout_volume_multiple", "max_extension_from_sma_pct", "sma_period"], v_parabolic)}
 
-def verify_candidate(c, s: Snapshot, spec_dir=SPEC_DIR, sp=SystemParams()):
+def verify_candidate(c, s: Snapshot, spec_dir=SPEC_DIR, sp=SystemParams(), variant=None):
     """-> (passed: bool, criteria: list, blockers: list). Candidate must pass for its originating strategy
     AND every additional qualifying strategy that is claimed (a claimed-but-incomplete strategy is ignored, not trusted)."""
-    sid = c["originating_strategy"]; req, fn = STRATEGIES[sid]; spec = load_spec(sid, spec_dir)
+    sid = c["originating_strategy"]
+    if variant:                                       # LEGION_NATIVE routing; never mixed with EXACT_PLATFORM results
+        from .scanners.gate import gate_native, NATIVE_SPEC_DIR
+        return gate_native(c, s, load_spec(variant, NATIVE_SPEC_DIR), sp)
+    req, fn = STRATEGIES[sid]; spec = load_spec(sid, spec_dir)
     if spec.get("format") == 2:
         from .scanners.gate import gate_v2
         return gate_v2(c, s, spec, sp)

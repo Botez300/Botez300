@@ -1,0 +1,45 @@
+{
+  "format": 2,
+  "classification": "LEGION_NATIVE",
+  "variant_of": "TURTLE",
+  "scanner": "TURTLE_NATIVE",
+  "status": "NATIVE_DEFINED",
+  "source_document": "specs/source/legion_scanner_instructions_2026-11-26.md",
+  "source_sha256": "d51e007509b1fb89edb2e7941136405affe39d24208810103dcfc3e87106c28d",
+  "mechanical_semantics_approved": true,
+  "semantics_approval": {
+    "approved_by": "owner",
+    "approved_in": "Phase 4 instructions, 2026-11-26",
+    "scope": "independent Legion-native paper research only; not proprietary-platform equivalence"
+  },
+  "activation": {
+    "approved": false,
+    "note": "entries need approved entry-confirmation thresholds and closed data gaps"
+  },
+  "params": {
+    "universe": "EXISTING",
+    "liquidity": {
+      "min_price": 5.0,
+      "min_median_dollar_volume_20d": 5000000,
+      "max_spread_pct_of_mid": 0.005
+    },
+    "indicator": "Turtle Trading Strategy (Long-Only)",
+    "parameter_tuple": "(yes, yes, yes, yes, 2)"
+  },
+  "pending_semantics": [],
+  "data_gaps": [],
+  "entry_confirmation": {
+    "approved": false,
+    "defined": true,
+    "status": "PROPOSED",
+    "proposed_thresholds": {
+      "max_stop_distance_pct": 15.0
+    }
+  },
+  "max_candidates": 10,
+  "exit_rules": [],
+  "label": "LEGION_NATIVE - never an exact platform signal",
+  "rules": "original historical Turtle System 1 (20d, skip-after-winner, exit 10d low) and System 2 (55d, exit 20d low); stop 2N; N = 20-day Wilder TR",
+  "equivalence": "NOT equivalent to platform tuple (yes, yes, yes, yes, 2)",
+  "buy_now_policy": "Turtle-only qualification is never BUY_NOW"
+}

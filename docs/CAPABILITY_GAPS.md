@@ -1,28 +1,24 @@
-# Robinhood capability-gap report (probed 2026-11-26, read-only)
+# Data capability (updated Phase 4, 2026-11-26)
 
-Evidence: live read-only MCP calls from the build session; responses recorded in `fixtures/robinhood_recorded/`. No additional data provider has been added (owner instruction).
+Sources are authorized per `legion/evidence.py`. Each status below was established in this session.
 
-| Strategy | Input | Needed | Robinhood | Evidence |
-|---|---|---|---|---|
-| CAN_SLIM | Universe | current complete IWM holdings | **PARTIAL** | preview_scan supports index code Russell2000 (index membership, not ETF holdings) |
-| CAN_SLIM | C/A quarterly EPS | E[0]..E[16], one consistent basis | **GAP** | get_earnings_results returns trailing <=8 quarters (7 reported for NVDA); basis undocumented |
-| CAN_SLIM | N | weekly highs | **AVAILABLE** | get_equity_historicals interval=week |
-| CAN_SLIM | S | completed monthly volume, >=24 months | **AVAILABLE** | get_equity_historicals interval=month |
-| CAN_SLIM | L RP(yearly) for SPX500 | exact provider metric | **GAP** | not in scanner datapoints or Legend catalog |
-| CAN_SLIM | I dated analyst Buy ratings | individual ratings with dates | **GAP** | get_equity_analyst_ratings: aggregate counts + updated_at only |
-| CAN_SLIM | M market SMA200 | >=290 completed daily index bars | **AVAILABLE** | get_indexes + get_index_historicals (SPX); index chosen pending owner |
-| MINERVINI_VCP_SEPA | G1 trend-template signal | authentic 10-criteria signal | **GAP** | no such indicator in Legend catalog / scanner datapoints |
-| MINERVINI_VCP_SEPA | G1 market cap | point-in-time market cap | **AVAILABLE** | get_equity_fundamentals.market_cap (market_date stamped) |
-| MINERVINI_VCP_SEPA | G2-G4 | daily/weekly OHLCV | **AVAILABLE** | get_equity_historicals |
-| TURTLE | System 1/2 entry signals | platform indicator readings | **GAP** | no Turtle indicator in Legend catalog |
-| WEINSTEIN_STAGE_2 | Stage readings | Weinstein Stage Analysis (30,5,sma) | **GAP** | no Weinstein indicator in Legend catalog |
-| WEINSTEIN_STAGE_2 | Relative volume | weekly volume | **AVAILABLE** | get_equity_historicals interval=week |
-| MAGIC_FORMULA | Operating income TTM | reported TTM operating income | **PARTIAL** | only fundamental.operatingMargin x totalRevenue (derived; period undocumented) |
-| MAGIC_FORMULA | Enterprise value | EV > 0 | **AVAILABLE** | fundamental.enterpriseValue via preview_scan |
-| MAGIC_FORMULA | ROIC TTM | documented ROIC | **GAP** | no ROIC datapoint; returnOnEquity/returnOnAssets are not substitutes |
-| MAGIC_FORMULA | Universe | broad US common equities | **PARTIAL** | preview_scan caps at 200 rows per call; must partition the universe |
-| PARABOLIC_MOMENTUM | Bollinger/ROC/relvol/close | daily OHLCV | **AVAILABLE** | computed locally from get_equity_historicals; semantics pending |
+| Need | Source | Status |
+|---|---|---|
+| Daily, weekly and monthly OHLCV | Robinhood MCP | AVAILABLE (recorded) |
+| Diluted GAAP quarterly EPS | SEC XBRL via Robinhood `get_sec_filing_facts` | AVAILABLE for Q1-Q3 (3-month facts). Q4 is not separately filed, so Q4 slots stay UNVERIFIED. 17 quarters needs about 12 filings, i.e. 4 facts calls per ticker |
+| TTM operating income, taxes, pretax income, balance sheet | SEC XBRL via Robinhood | AVAILABLE (recorded AAPL 10-Q) |
+| Native ROIC, EV | derived from SEC plus Robinhood market cap | IMPLEMENTED, with provenance |
+| IWM point-in-time constituents | iShares official holdings file | PARSER READY. Direct download is blocked in the build sandbox (proxy 403), so the format is unverified until the first host download |
+| SEC EDGAR direct (data.sec.gov) | official | blocked in the sandbox; works on the host only if network allows |
+| Dated individual analyst Buy ratings | none authorized | GAP. Robinhood gives aggregate counts only. Alpha Vantage and Bigdata.com are proposed below, not connected |
+| RP(yearly) for SPX500 | none | GAP. Stays UNVERIFIED (your instruction) |
+| Minervini 10-criteria signal, Weinstein Stage, Turtle (yes,yes,yes,yes,2) | TradingView MCP (authorized research platform in this session) | Several community scripts share these names. Which exact script and version is your platform's is UNKNOWN (C18). There is no "Turtle Trading Strategy (Long-Only)" script. The import path exists, but readings count only after you map script_id+version |
+| Options chains, quotes, Greeks | Robinhood MCP | AVAILABLE (recorded) |
 
-**Result:** CAN_SLIM, MINERVINI_VCP_SEPA, TURTLE, WEINSTEIN_STAGE_2 and MAGIC_FORMULA each have at least one mandatory input Robinhood does not supply, so they cannot mechanically PASS on Robinhood data and stay UNVERIFIED. PARABOLIC_MOMENTUM is computable from Robinhood OHLCV, but its semantics are pending your approval.
-
-Legend indicator catalog (built-ins) was checked: it contains standard studies (Bollinger, Donchian, RSI, ROC, ATR, ...) but no Turtle Trading Strategy, Weinstein Stage Analysis, Minervini Trend Template or RP(yearly).
+## Proposed providers (NOT connected; your approval needed)
+| Provider | Would close | Notes |
+|---|---|---|
+| Alpha Vantage (MCP connected to the Claude session) | analyst rating counts, earnings, statements, ETF profile | Analyst data is aggregate, so it still does not close CAN SLIM "I". A premium API key may be needed for volume |
+| Bigdata.com (MCP connected to the Claude session) | analyst actions in news and documents | Could provide dated rating actions if a licensed broker-research source is included. Verify licensing |
+| A licensed analyst-actions feed (e.g. Benzinga/Zacks/FactSet via a paid plan) | CAN SLIM "I" exactly | paid; not evaluated |
+| The platform that defines RP(yearly) and the named indicators | CAN SLIM "L", the EXACT Minervini, Weinstein and Turtle scanners | you need to name the platform |

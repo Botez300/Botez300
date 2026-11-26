@@ -26,11 +26,14 @@ class Service:
     def _save(self):
         tmp = self.sp + ".tmp"; json.dump(self.st, open(tmp, "w")); os.replace(tmp, self.sp)
     def emergency(self): return os.path.exists(os.path.join(self.sd, "EMERGENCY_STOP")) or self.stop
+    def stop_requested(self): return os.path.exists(os.path.join(self.sd, "STOP_REQUEST"))
 
     def tick(self):
         """One iteration. Returns seconds to sleep, or None when the service must exit."""
         if MODE != "PAPER": raise SystemExit("refusing to run outside PAPER mode")
         if self.emergency(): self.alert("EMERGENCY_SHUTDOWN", "stop requested"); return None
+        if self.stop_requested():
+            os.remove(os.path.join(self.sd, "STOP_REQUEST")); self.alert("GRACEFUL_STOP", "STOP_REQUEST file"); self.exit_code = 0; return None
         now = self.clock(); ny = now.astimezone(cal.NY); state = cal.state(now)
         if cal.is_trading_day(ny.date()): self.b.roll_periods(ny.date().isoformat(), "%d-W%02d" % ny.isocalendar()[:2])
         delay = self.cfg.get("poll_s", 60)
@@ -54,8 +57,20 @@ class Service:
 
     def run(self):
         for s in (signal.SIGINT, signal.SIGTERM): signal.signal(s, lambda *_: setattr(self, "stop", True))
+        self.exit_code = 3
         while (d := self.tick()) is not None: self.sleep(d)
-        return 3
+        return self.exit_code
+
+def setup_logging(state_dir, max_bytes=5_000_000, backups=10):
+    """Persistent rotating log at <state_dir>/logs/legion.log (survives restarts/reboots)."""
+    import logging
+    from logging.handlers import RotatingFileHandler
+    os.makedirs(os.path.join(state_dir, "logs"), exist_ok=True)
+    h = RotatingFileHandler(os.path.join(state_dir, "logs", "legion.log"), maxBytes=max_bytes, backupCount=backups, encoding="utf-8")
+    h.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
+    root = logging.getLogger("legion"); root.setLevel(logging.INFO)
+    if not any(isinstance(x, RotatingFileHandler) for x in root.handlers): root.addHandler(h)
+    return root
 
 def main(argv=None):                        # pragma: no cover - requires host credentials
     from .config import Limits
@@ -68,12 +83,15 @@ def main(argv=None):                        # pragma: no cover - requires host c
     from .watcher import Watcher
     ap = argparse.ArgumentParser(); ap.add_argument("--config", required=True); a = ap.parse_args(argv)
     cfg = json.load(open(a.config)); sd = cfg["state_dir"]; os.makedirs(sd, exist_ok=True)
+    setup_logging(sd)
     if os.path.exists(os.path.join(sd, "EMERGENCY_STOP")): print("EMERGENCY_STOP present; remove it deliberately to resume"); return 3
     src = LocalDirSource(cfg["local_dir"], settle_s=5) if cfg["source"] == "local" else DriveApiSource(
         cfg["drive_folder_id"], cfg.get("service_account_file"), cfg.get("oauth_token_file"))
-    rh = RobinhoodClient(McpHttpTransport()); mk = RobinhoodMarket(rh)
+    from .rh import ResilientTransport
+    rh = RobinhoodClient(ResilientTransport(McpHttpTransport())); mk = RobinhoodMarket(rh)
     br = PaperBroker(os.path.join(sd, "paper_state.json"), os.path.join(sd, "paper_journal.jsonl"), cfg.get("paper_start_equity", 100000.0))
-    orch = Orchestrator(Ledger(os.path.join(sd, "ledger.json")), br, mk, rh, os.path.join(sd, "decisions.jsonl"), option_kinds=tuple(cfg.get("option_kinds", [])))
+    orch = Orchestrator(Ledger(os.path.join(sd, "ledger.json")), br, mk, rh, os.path.join(sd, "decisions.jsonl"), option_kinds=tuple(cfg.get("option_kinds", [])),
+                        variants=cfg.get("strategy_variants", {}), require_report_evidence=True)      # production: unsupported PASS labels never count
     return Service(cfg, Watcher(src, orch), orch, br, mk, rh).run()
 
 if __name__ == "__main__": sys.exit(main())

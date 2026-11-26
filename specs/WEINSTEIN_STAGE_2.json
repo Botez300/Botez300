@@ -34,5 +34,6 @@
   "long_base_board": {
     "min_base_weeks": 52,
     "mandatory": false
-  }
+  },
+  "classification": "EXACT_PLATFORM"
 }

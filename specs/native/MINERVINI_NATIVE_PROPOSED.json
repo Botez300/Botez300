@@ -1,0 +1,57 @@
+{
+  "format": 2,
+  "classification": "LEGION_NATIVE",
+  "variant_of": "MINERVINI_VCP_SEPA",
+  "scanner": "MINERVINI_NATIVE_PROPOSED",
+  "status": "NATIVE_DEFINED",
+  "source_document": "specs/source/legion_scanner_instructions_2026-11-26.md",
+  "source_sha256": "d51e007509b1fb89edb2e7941136405affe39d24208810103dcfc3e87106c28d",
+  "mechanical_semantics_approved": false,
+  "semantics_approval": null,
+  "activation": {
+    "approved": false,
+    "note": "entries need approved entry-confirmation thresholds and closed data gaps"
+  },
+  "params": {
+    "universe": "US_COMMON",
+    "liquidity": {
+      "min_price": 5.0,
+      "min_median_dollar_volume_20d": 5000000,
+      "max_spread_pct_of_mid": 0.005
+    },
+    "min_market_cap": 2000000000,
+    "daily_band_pct": 0.07,
+    "weekly_band_pct": 0.2,
+    "volume_offsets": [
+      30,
+      25,
+      20,
+      15,
+      10,
+      5
+    ]
+  },
+  "pending_semantics": [],
+  "data_gaps": [
+    "Native trend template is a PROPOSAL awaiting approval",
+    "RS-rating criterion has no authorized source"
+  ],
+  "entry_confirmation": {
+    "approved": false,
+    "defined": true,
+    "status": "PROPOSED",
+    "proposed_thresholds": {
+      "min_reward_risk": 2.0,
+      "max_stop_distance_pct": 8.0,
+      "base_len": 60,
+      "min_contractions": 2,
+      "max_final_contraction_pct": 10.0,
+      "breakout_volume_x": 1.5,
+      "max_extension_pct": 5.0
+    }
+  },
+  "max_candidates": 10,
+  "exit_rules": [],
+  "label": "LEGION_NATIVE - never an exact platform signal",
+  "proposal": "published Minervini trend-template criteria computed from daily closes + market cap > $2B; RS rating needs an approved definition"
+}

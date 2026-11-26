@@ -9,7 +9,8 @@ from typing import Callable
 READ_ONLY_TOOLS = frozenset({"get_equity_quotes", "get_equity_historicals", "get_equity_fundamentals",
     "get_equity_technical_indicators", "get_option_chains", "get_option_instruments", "get_option_quotes",
     "get_earnings_calendar", "get_earnings_results", "get_equity_analyst_ratings", "get_financials", "get_indexes",
-    "get_index_historicals", "get_scanner_datapoints", "get_scanner_filter_specs", "preview_scan"})
+    "get_index_historicals", "get_scanner_datapoints", "get_scanner_filter_specs", "preview_scan",
+    "get_sec_filing_index", "get_sec_filing_facts"})
 # preview_scan evaluates filters WITHOUT saving (read-only). create_scan / update_scan_* are writes and stay blocked.
 class ToolBlocked(PermissionError): pass
 class ConnectionFailure(RuntimeError): pass
@@ -137,30 +138,54 @@ class RecordedTransport:
              "get_option_instruments": "get_option_instruments.SPY.json", "get_option_quotes": "get_option_quotes.SPY.json",
              "get_earnings_results": "get_earnings_results.NVDA.json", "get_equity_analyst_ratings": "get_equity_analyst_ratings.NVDA.json",
              "get_financials": "get_financials.NVDA.json", "get_indexes": "get_indexes.SPX.json", "get_index_historicals": "get_index_historicals.SPX.json",
-             "preview_scan": "preview_scan.russell2000.json"}
+             "preview_scan": "preview_scan.russell2000.json",
+             "get_sec_filing_index": "get_sec_filing_index.AAPL.json", "get_sec_filing_facts": "get_sec_filing_facts.AAPL_10Q_2026-07-31.trimmed.json"}
     def __init__(self, d): self.d = d
     def __call__(self, tool, args):
         return json.load(open(os.path.join(self.d, self.FILES[tool])))
 
-DEFAULT_RH_MCP_URL = "https://agent.robinhood.com/mcp/trading"   # as published by third-party guides; verify against Robinhood docs
+DEFAULT_RH_MCP_URL = "https://agent.robinhood.com/mcp/trading"   # confirmed on robinhood.com support article "Onboarding an external agent"
 
 class McpHttpTransport:
-    """Streamable-HTTP MCP client for the official Robinhood MCP server. UNTESTED end-to-end: the build sandbox's network
-    policy blocks agent.robinhood.com and no OAuth token exists here. Token = OAuth access token obtained through Robinhood's
-    own login flow (see docs/ROBINHOOD_MCP.md), read from LEGION_RH_MCP_TOKEN or a token file outside the repository."""
-    def __init__(self, url=None, token=None, token_file=None):
+    """Streamable-HTTP MCP client for the official Robinhood MCP server (mcp SDK >= 2.x API: streamable_http_client +
+    create_mcp_http_client). Auth: an httpx Auth object, normally legion.rh_auth.oauth_provider(), which performs the
+    standard MCP OAuth flow (discovery, dynamic client registration, PKCE, refresh) and keeps tokens in the OS credential
+    store. NOT verified end-to-end from the build sandbox (proxy blocks agent.robinhood.com; no interactive login)."""
+    def __init__(self, url=None, auth=None):
         self.url = url or os.environ.get("LEGION_RH_MCP_URL", DEFAULT_RH_MCP_URL)
-        tf = token_file or os.environ.get("LEGION_RH_MCP_TOKEN_FILE")
-        self.token = token or os.environ.get("LEGION_RH_MCP_TOKEN") or (open(tf).read().strip() if tf else None)
-        if not self.token: raise RuntimeError("no Robinhood MCP OAuth token configured (LEGION_RH_MCP_TOKEN / LEGION_RH_MCP_TOKEN_FILE)")
+        if auth is None:
+            from .rh_auth import oauth_provider
+            auth = oauth_provider(self.url)
+        self.auth = auth
     def __call__(self, tool, args):
         if tool not in READ_ONLY_TOOLS: raise ToolBlocked(tool)
         import asyncio
         from mcp import ClientSession
-        from mcp.client.streamable_http import streamablehttp_client
+        from mcp.client.streamable_http import streamable_http_client, create_mcp_http_client
         async def go():
-            async with streamablehttp_client(self.url, headers={"Authorization": f"Bearer {self.token}"}) as (r, w, _):
-                async with ClientSession(r, w) as s:
-                    await s.initialize(); res = await s.call_tool(tool, args)
-                    return json.loads(res.content[0].text)
+            async with create_mcp_http_client(auth=self.auth) as http:
+                async with streamable_http_client(self.url, http_client=http) as streams:
+                    r, w = streams[0], streams[1]
+                    async with ClientSession(r, w) as s:
+                        await s.initialize(); res = await s.call_tool(tool, args)
+                        if getattr(res, "isError", False) or getattr(res, "is_error", False): raise RuntimeError(f"tool error: {res.content[0].text[:200]}")
+                        return json.loads(res.content[0].text)
         return asyncio.run(go())
+
+class ResilientTransport:
+    """Retries transient failures with exponential backoff. Never retries ToolBlocked; never changes the tool or args."""
+    def __init__(self, inner, retries=3, base_delay=1.0, sleep=None):
+        import time
+        self.inner, self.retries, self.base, self.sleep = inner, retries, base_delay, sleep or time.sleep
+        self.failures = 0
+    def __call__(self, tool, args):
+        if tool not in READ_ONLY_TOOLS: raise ToolBlocked(tool)
+        last = None
+        for i in range(self.retries + 1):
+            try:
+                out = self.inner(tool, args); self.failures = 0; return out
+            except ToolBlocked: raise
+            except Exception as e:
+                last = e; self.failures += 1
+                if i < self.retries: self.sleep(self.base * 2 ** i)
+        raise ConnectionFailure(f"{tool} failed after {self.retries + 1} attempts: {type(last).__name__}: {last}")

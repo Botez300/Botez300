@@ -35,5 +35,6 @@
   },
   "exit_rules": [],
   "ranking": "EY desc rank + ROIC desc rank; combined ascending; competition ranking for ties; final tie-break EY rank then ticker",
-  "buy_now_policy": "Mechanical qualification alone is not BUY_NOW"
+  "buy_now_policy": "Mechanical qualification alone is not BUY_NOW",
+  "classification": "EXACT_PLATFORM"
 }

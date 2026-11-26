@@ -39,5 +39,6 @@
     "weekly RSI>50",
     "monthly RSI>50"
   ],
-  "research": "classic 20/55 Donchian, separately labeled"
+  "research": "classic 20/55 Donchian, separately labeled",
+  "classification": "EXACT_PLATFORM"
 }

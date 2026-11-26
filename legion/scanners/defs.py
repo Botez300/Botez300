@@ -28,6 +28,9 @@ class Data:
     enterprise_value: float | None = None
     roic_ttm: float | None = None; roic_definition: str | None = None
     proprietary: dict = field(default_factory=dict)
+    provenance: dict = field(default_factory=dict)       # field -> evidence dicts (source, observed_at, method)
+    sector: str | None = None
+    extra_spy: list | None = None                         # SPY closes aligned to daily bars (entry RS check)
 
 def _closes(b): return [x.c for x in b]
 def _vols(b): return [x.v for x in b]

@@ -47,5 +47,6 @@
     "pivot confirmation",
     "relative strength vs SPY",
     "breakout volume"
-  ]
+  ],
+  "classification": "EXACT_PLATFORM"
 }

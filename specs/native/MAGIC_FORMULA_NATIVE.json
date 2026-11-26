@@ -1,0 +1,49 @@
+{
+  "format": 2,
+  "classification": "LEGION_NATIVE",
+  "variant_of": "MAGIC_FORMULA",
+  "scanner": "MAGIC_FORMULA_NATIVE",
+  "status": "NATIVE_DEFINED",
+  "source_document": "specs/source/legion_scanner_instructions_2026-11-26.md",
+  "source_sha256": "d51e007509b1fb89edb2e7941136405affe39d24208810103dcfc3e87106c28d",
+  "mechanical_semantics_approved": true,
+  "semantics_approval": {
+    "approved_by": "owner",
+    "approved_in": "Phase 4 instructions, 2026-11-26",
+    "scope": "independent Legion-native paper research only; not proprietary-platform equivalence"
+  },
+  "activation": {
+    "approved": false,
+    "note": "entries need approved entry-confirmation thresholds and closed data gaps"
+  },
+  "params": {
+    "universe": "US_COMMON",
+    "min_earnings_yield": 0.1,
+    "min_market_cap": 10000000,
+    "min_volume_sma20": 300000,
+    "min_roic": 0.15,
+    "accepted_operating_income_sources": [
+      "SEC_TTM_OPERATING_INCOME"
+    ],
+    "accepted_roic_definitions": [
+      "LEGION_NATIVE_ROIC_V1"
+    ]
+  },
+  "pending_semantics": [],
+  "data_gaps": [],
+  "entry_confirmation": {
+    "approved": false,
+    "defined": true,
+    "status": "PROPOSED",
+    "proposed_thresholds": {
+      "min_reward_risk": 2.0,
+      "max_stop_distance_pct": 8.0
+    }
+  },
+  "max_candidates": 10,
+  "exit_rules": [],
+  "label": "LEGION_NATIVE - never an exact platform signal",
+  "roic_definition": "LEGION_NATIVE_ROIC_V1 = TTM NOPAT / avg(IC_begin, IC_end); NOPAT = TTM operating income x (1 - TTM tax/TTM pretax); IC = debt (LTD noncurrent + LTD current + CP + ST borrowings) + equity - cash",
+  "exclusions": "financial institutions; pretax <= 0; effective tax outside [0, 50%] (bounds PROPOSED); avg IC <= 0; incomplete statements",
+  "buy_now_policy": "ranking alone never BUY_NOW"
+}
