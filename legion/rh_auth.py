@@ -10,8 +10,10 @@ SERVICE = "legion-quant-capital/robinhood-mcp"
 class InsecureCredentialStore(RuntimeError): pass
 
 def _keyring(backend=None):
-    import keyring
-    kr = backend or keyring.get_keyring()
+    if backend is None:
+        import keyring
+        backend = keyring.get_keyring()
+    kr = backend
     name = type(kr).__module__ + "." + type(kr).__name__
     if "fail" in name.lower() or "null" in name.lower() or "plaintext" in name.lower():
         raise InsecureCredentialStore(f"no secure OS credential store available ({name}); refusing to store Robinhood tokens")
