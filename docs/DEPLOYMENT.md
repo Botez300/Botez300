@@ -41,3 +41,11 @@ tools are callable; order/cancel/exercise/watchlist/alert tools raise `ToolBlock
 4. Kill the process -> task scheduler/launchd restarts it; ledger and paper state intact.
 5. Disconnect network -> `CONNECTION_LOST` alert after 3 failures, recovery alert afterwards.
 6. Create `EMERGENCY_STOP` -> service exits and stays down.
+
+## Phase 3 additions
+- Mechanical scans: `python -m legion.scanners.cli --strategy <ID> --tickers tickers.txt --out scan.json` (needs the Robinhood transport, docs/ROBINHOOD_MCP.md).
+  Output is research only (`NOT_A_TRADE_SIGNAL`). Magic Formula ranking: `legion.scanners.magic_rank.rank`.
+- Claude escalation: set `claude_escalation.enabled=true` in config.json. Requires the Claude Code CLI to be installed and logged in on the host.
+  Invocation: `claude -p --tools "" --strict-mcp-config --output-format json --json-schema ...`, with no tools and no MCP servers, so it can only answer.
+  Answers are written to `state/escalations/` as ADVISORY_ONLY. They are never acted on automatically.
+- Drive API: `DriveApiSource` was tested only against a fake Drive service (pagination, md5, non-JSON skip). Real Google authentication has not been tested.

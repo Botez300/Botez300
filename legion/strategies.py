@@ -123,6 +123,9 @@ def verify_candidate(c, s: Snapshot, spec_dir=SPEC_DIR, sp=SystemParams()):
     """-> (passed: bool, criteria: list, blockers: list). Candidate must pass for its originating strategy
     AND every additional qualifying strategy that is claimed (a claimed-but-incomplete strategy is ignored, not trusted)."""
     sid = c["originating_strategy"]; req, fn = STRATEGIES[sid]; spec = load_spec(sid, spec_dir)
+    if spec.get("format") == 2:
+        from .scanners.gate import gate_v2
+        return gate_v2(c, s, spec, sp)
     ok, why = spec_complete(spec, req)
     if not ok: return False, [], [f"STRATEGY_INCOMPLETE {sid}: {w}" for w in why]
     res = common(c, s, sp) + fn(c, s, spec["params"], sp)

@@ -1,14 +1,38 @@
 {
+  "format": 2,
   "strategy": "WEINSTEIN_STAGE_2",
-  "status": "INCOMPLETE",
-  "source_document": null,
-  "source_sha256": null,
-  "note": "Original Legion scanner specification not available to the build. Fill params and exit_rules from the spec, set status COMPLETE, and record source_document + source_sha256. Do not guess values.",
-  "params": {
-    "ma_weeks": null,
-    "ma_slope_weeks": null,
-    "breakout_volume_multiple": null,
-    "min_rs_excess_return_pct": null
+  "status": "DEFINED_PENDING_APPROVAL",
+  "source_document": "specs/source/legion_scanner_instructions_2026-11-26.md",
+  "source_sha256": "d51e007509b1fb89edb2e7941136405affe39d24208810103dcfc3e87106c28d",
+  "activation": {
+    "approved": false,
+    "approved_by": null,
+    "approved_at": null,
+    "note": "Mechanical scanning runs; NO trade entry may originate from this strategy until the owner approves the pending semantics, data gaps are closed, and entry-confirmation rules are defined."
   },
-  "exit_rules": []
+  "params": {
+    "interval": "week",
+    "group_window": 3,
+    "group_window_mode": "common_anchor",
+    "min_relative_volume": 1.0,
+    "indicator": "Weinstein Stage Analysis (30,5,sma)"
+  },
+  "pending_semantics": [
+    "three-candle group window: common anchor vs independent candles",
+    "Relative Volume (20,SMA,1) baseline/offset",
+    "ranking key (unspecified)"
+  ],
+  "data_gaps": [
+    "Platform Weinstein stage readings unavailable from Robinhood"
+  ],
+  "max_candidates": 10,
+  "entry_confirmation": {
+    "defined": false,
+    "note": "Separate from mechanical qualification; rules not yet specified by owner."
+  },
+  "exit_rules": [],
+  "long_base_board": {
+    "min_base_weeks": 52,
+    "mandatory": false
+  }
 }

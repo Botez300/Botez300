@@ -1,6 +1,6 @@
 # Strategy specifications required
 
-The original Legion scanner specifications were **not available** to this build, so no strategy criteria were invented.
+**Superseded (Phase 3):** specs are now format 2, derived from `specs/source/legion_scanner_instructions_2026-11-26.md` (hash recorded in every spec). See docs/ASSUMPTIONS_APPROVAL.md and docs/CAPABILITY_GAPS.md. The text below describes the legacy format-1 path, still supported for compatibility.
 Each of `specs/*.json` is `status: INCOMPLETE` with every parameter `null`. A strategy is COMPLETE only when its file has
 `status: COMPLETE`, `source_document` + `source_sha256`, every parameter non-null, and at least one valid `exit_rules` entry
 (`channel_exit`, `ma_break_weeks`, `max_hold_days`, `trailing_pct`). Until then every entry originating from that strategy is blocked

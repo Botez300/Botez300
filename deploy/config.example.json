@@ -8,5 +8,10 @@
   "poll_s": 60,
   "daily_deadline_et": "09:15",
   "paper_start_equity": 100000.0,
-  "option_kinds": []
+  "option_kinds": [],
+  "claude_escalation": {
+    "enabled": false,
+    "max_per_day": 5,
+    "model": null
+  }
 }

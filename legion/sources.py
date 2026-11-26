@@ -27,7 +27,9 @@ class DriveApiSource:
     Credentials are read from files OUTSIDE the repository: a service-account key (folder must be shared with the
     service account) or an OAuth user token created by `python -m legion.drive_auth`."""
     SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
-    def __init__(self, folder_id, credentials_file=None, token_file=None):
+    def __init__(self, folder_id, credentials_file=None, token_file=None, service=None):
+        if service is not None:                    # dependency injection for tests / custom auth
+            self.svc, self.folder = service, folder_id; return
         from googleapiclient.discovery import build            # pip install google-api-python-client google-auth google-auth-oauthlib
         if credentials_file:
             from google.oauth2 import service_account

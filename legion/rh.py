@@ -8,7 +8,9 @@ from typing import Callable
 
 READ_ONLY_TOOLS = frozenset({"get_equity_quotes", "get_equity_historicals", "get_equity_fundamentals",
     "get_equity_technical_indicators", "get_option_chains", "get_option_instruments", "get_option_quotes",
-    "get_earnings_calendar"})
+    "get_earnings_calendar", "get_earnings_results", "get_equity_analyst_ratings", "get_financials", "get_indexes",
+    "get_index_historicals", "get_scanner_datapoints", "get_scanner_filter_specs", "preview_scan"})
+# preview_scan evaluates filters WITHOUT saving (read-only). create_scan / update_scan_* are writes and stay blocked.
 class ToolBlocked(PermissionError): pass
 class ConnectionFailure(RuntimeError): pass
 class DataError(ValueError): pass
@@ -102,21 +104,55 @@ class RobinhoodClient:
             out.append(d[:10])
         return out
 
+def _ext(cls):
+    def earnings_history(self, sym):
+        """Reported quarters only, newest first. Basis is not documented by the tool => 'UNDOCUMENTED'."""
+        rs = self.call("get_earnings_results", {"symbol": sym})["results"]
+        rep = [r for r in rs if (r.get("eps") or {}).get("actual") is not None]
+        rep.sort(key=lambda r: (r["year"], r["quarter"]), reverse=True)
+        return [{"eps": _f(r["eps"]["actual"]), "fiscal": f"{r['year']}Q{r['quarter']}", "report_date": (r.get("report") or {}).get("date")} for r in rep], "UNDOCUMENTED"
+    def analyst_ratings(self, sym):
+        r = self.call("get_equity_analyst_ratings", {"symbols": [sym]})["results"]
+        return (r[0] or {}).get("ratings") if r else None
+    def index_id(self, sym):
+        ix = self.call("get_indexes", {"symbols": sym})["indexes"]
+        if not ix: raise DataError(f"no index {sym}")
+        return ix[0]["id"]
+    def index_bars(self, sym, start, interval="day"):
+        r = self.call("get_index_historicals", {"instrument_ids": [self.index_id(sym)], "start_time": start, "interval": interval})["results"]
+        return [Bar(_t(b["begins_at"]), _f(b["open_value"]), _f(b["high_value"]), _f(b["low_value"]), _f(b["close_value"]), 0.0)
+                for b in (r[0]["bars"] if r else []) if not b.get("interpolated")]
+    def scan_universe(self, index_code, extra_filters=(), columns=()):
+        """Robinhood scanner, read-only preview. Caps at 200 rows per call (total_items 201 => truncated)."""
+        d = self.call("preview_scan", {"filters": [{"expression": "symbol", "predicate": "PREDICATE_IN_LIST", "values": [index_code]}, *extra_filters],
+                                       "columns": list(columns) or None})["result"]
+        return d["results"], d["total_items"] > len(d["results"])
+    for f in (earnings_history, analyst_ratings, index_id, index_bars, scan_universe): setattr(cls, f.__name__, f)
+_ext(RobinhoodClient)
+
 class RecordedTransport:
     """Replays fixtures/robinhood_recorded/*. Test use only."""
     FILES = {"get_equity_quotes": "get_equity_quotes.SPY.json", "get_equity_historicals": "get_equity_historicals.SPY.json",
              "get_equity_fundamentals": "get_equity_fundamentals.SPY.json", "get_option_chains": "get_option_chains.SPY.json",
-             "get_option_instruments": "get_option_instruments.SPY.json", "get_option_quotes": "get_option_quotes.SPY.json"}
+             "get_option_instruments": "get_option_instruments.SPY.json", "get_option_quotes": "get_option_quotes.SPY.json",
+             "get_earnings_results": "get_earnings_results.NVDA.json", "get_equity_analyst_ratings": "get_equity_analyst_ratings.NVDA.json",
+             "get_financials": "get_financials.NVDA.json", "get_indexes": "get_indexes.SPX.json", "get_index_historicals": "get_index_historicals.SPX.json",
+             "preview_scan": "preview_scan.russell2000.json"}
     def __init__(self, d): self.d = d
     def __call__(self, tool, args):
         return json.load(open(os.path.join(self.d, self.FILES[tool])))
 
+DEFAULT_RH_MCP_URL = "https://agent.robinhood.com/mcp/trading"   # as published by third-party guides; verify against Robinhood docs
+
 class McpHttpTransport:
-    """UNTESTED. Needs `pip install mcp`, the Robinhood MCP URL and an OAuth/bearer token supplied via the
-    environment (LEGION_RH_MCP_URL, LEGION_RH_MCP_TOKEN). The endpoint and auth scheme were not available in
-    the build sandbox; nothing here proves they work."""
-    def __init__(self, url=None, token=None):
-        self.url, self.token = url or os.environ["LEGION_RH_MCP_URL"], token or os.environ["LEGION_RH_MCP_TOKEN"]
+    """Streamable-HTTP MCP client for the official Robinhood MCP server. UNTESTED end-to-end: the build sandbox's network
+    policy blocks agent.robinhood.com and no OAuth token exists here. Token = OAuth access token obtained through Robinhood's
+    own login flow (see docs/ROBINHOOD_MCP.md), read from LEGION_RH_MCP_TOKEN or a token file outside the repository."""
+    def __init__(self, url=None, token=None, token_file=None):
+        self.url = url or os.environ.get("LEGION_RH_MCP_URL", DEFAULT_RH_MCP_URL)
+        tf = token_file or os.environ.get("LEGION_RH_MCP_TOKEN_FILE")
+        self.token = token or os.environ.get("LEGION_RH_MCP_TOKEN") or (open(tf).read().strip() if tf else None)
+        if not self.token: raise RuntimeError("no Robinhood MCP OAuth token configured (LEGION_RH_MCP_TOKEN / LEGION_RH_MCP_TOKEN_FILE)")
     def __call__(self, tool, args):
         if tool not in READ_ONLY_TOOLS: raise ToolBlocked(tool)
         import asyncio

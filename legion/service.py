@@ -10,7 +10,16 @@ class Service:
     def __init__(self, cfg, watcher, orch, broker, market, rh, clock=lambda: datetime.now(timezone.utc), sleep=time.sleep):
         self.cfg, self.w, self.o, self.b, self.m, self.rh, self.clock, self.sleep = cfg, watcher, orch, broker, market, rh, clock, sleep
         self.sd = cfg["state_dir"]; os.makedirs(self.sd, exist_ok=True)
-        self.alert = Alerts(os.path.join(self.sd, "alerts.jsonl")); self.o.alert = self.alert
+        from .escalation import ClaudeEscalator
+        base = Alerts(os.path.join(self.sd, "alerts.jsonl")); ec = cfg.get("claude_escalation", {})
+        self.escalator = ClaudeEscalator(self.sd, enabled=bool(ec.get("enabled")), max_per_day=ec.get("max_per_day", 5), model=ec.get("model"))
+        MAP = {"MISSING_DAILY_REPORT": "MISSING_DAILY_REPORT", "CONNECTION_LOST": "REPEATED_DATA_FAILURE"}
+        def alert(kind, msg=""):
+            base(kind, msg)
+            if kind in MAP:
+                try: self.escalator(MAP[kind], {"alert": kind, "message": str(msg)}, self.clock().date().isoformat())
+                except Exception as e: base("ESCALATION_ERROR", f"{type(e).__name__}: {e}")
+        self.alert = alert; self.o.alert = self.alert
         self.sp = os.path.join(self.sd, "service_state.json")
         self.st = json.load(open(self.sp)) if os.path.exists(self.sp) else {"fails": 0, "last_ok": None, "daily_dates": [], "missing_alerted": []}
         self.stop = False
