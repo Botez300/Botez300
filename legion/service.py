@@ -119,6 +119,12 @@ def main(argv=None):                        # pragma: no cover - requires host c
     setup_logging(sd)
     if os.path.exists(os.path.join(sd, "EMERGENCY_STOP")): print("EMERGENCY_STOP present; remove it deliberately to resume"); return 3
     if cfg.get("paper_start_equity") in (None, 0): print("paper_start_equity is not set: the owner must choose it explicitly"); return 4
+    from .activation import evaluate as gate_eval
+    from .scanners.gate import NATIVE_SPEC_DIR
+    active, gates = gate_eval(cfg, sd, NATIVE_SPEC_DIR)
+    json.dump({"active": active, "gates": gates}, open(os.path.join(sd, "activation_status.json"), "w"), indent=1)
+    if not active and not cfg.get("observe_only", True):
+        print("activation gates not satisfied and observe_only is false: refusing to start", gates); return 6
     lock = acquire_lock(sd)
     if lock is None: print("another Legion service instance is running (state/service.lock)"); return 5
     src = LocalDirSource(cfg["local_dir"], settle_s=5) if cfg["source"] == "local" else DriveApiSource(
@@ -130,6 +136,7 @@ def main(argv=None):                        # pragma: no cover - requires host c
     orch = Orchestrator(SqliteLedger(os.path.join(sd, "ledger.sqlite")), br, mk, rh, os.path.join(sd, "decisions.jsonl"), option_kinds=tuple(cfg.get("option_kinds", [])),
                         variants=cfg.get("strategy_variants", {}), require_report_evidence=True,       # production: unsupported PASS labels never count
                         state_dir=sd, fill_slippage=cfg.get("paper_fill_slippage", 0.001))
+    orch.observe_only = not active                     # OBSERVE_ONLY until every activation gate passes
     return Service(cfg, Watcher(src, orch), orch, br, mk, rh).run()
 
 if __name__ == "__main__": sys.exit(main())

@@ -12,7 +12,8 @@ Definitions
 """
 from ..scanners import series as S
 
-DEFAULT = {"min_cons": 3, "max_cons": 10, "max_tr_ratio": 0.80, "max_ext": 0.20, "max_drift": 0.01, "max_stop": 0.08, "min_rr": 2.0}
+DEFAULT = {"min_cons": 3, "max_cons": 10, "max_tr_ratio": 0.80, "max_ext": 0.20, "max_drift": 0.01, "max_stop": 0.08, "min_rr": 2.0,
+           "contraction_method": "CONS_TR_OVER_ATR14_ANCHOR"}     # unchanged default; see contraction.py for the alternatives
 
 def anchor_ok(c, v, i):
     if i < 21: return False
@@ -29,10 +30,10 @@ def setup_at(b, i, p=DEFAULT):
         a = i - k
         if a < 21 or not anchor_ok(c, v, a): continue
         cons = b[a + 1:i + 1]; H = max(x.h for x in cons); L = min(x.l for x in cons)
-        atr_a = S.atr_wilder(b[:a + 1], 14)
-        ratio = (sum(_tr(b, j) for j in range(a + 1, i + 1)) / k) / atr_a if atr_a else None
+        from .contraction import ratio as _ratio
+        ratio = _ratio(p.get("contraction_method", "CONS_TR_OVER_ATR14_ANCHOR"), b[:i + 1], a, i)
         if ratio is None or ratio > p["max_tr_ratio"]: continue
         sma = S.sma(c, 20)
         if not sma or H / sma - 1 > p["max_ext"]: continue
-        return {"anchor": a, "cons_len": k, "pivot": H, "cons_low": L, "tr_ratio": ratio, "ext": H / sma - 1, "atr14": S.atr_wilder(b[:i + 1], 14)}
+        return {"anchor": a, "cons_len": k, "pivot": H, "cons_low": L, "tr_ratio": ratio, "contraction_method": p.get("contraction_method", "CONS_TR_OVER_ATR14_ANCHOR"), "ext": H / sma - 1, "atr14": S.atr_wilder(b[:i + 1], 14)}
     return None

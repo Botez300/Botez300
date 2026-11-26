@@ -14,7 +14,7 @@ defaults (quote age 60 s, drift 1%, earnings blackout 7 d, OI 500, contract vol 
 | P1 | Parabolic min reward/risk | 2.0 (your proposal) | 2.0 | Matches your proposal; partial-2R exit makes it consistent | Too low -> negative expectancy after costs | none historical | yes | **yes** |
 | P2 | Parabolic max stop distance | 8% | 8% | Bounds gap risk on volatile names | Wider -> larger gap losses | INSM shows 17-26% daily moves | yes | **yes** |
 | P3 | Consolidation length | 3-10 candles | 3-10 | Your proposal; excludes the anchor itself (no chasing) | Too short -> chasing | INSM: anchor-day only, correctly no setup | yes | **yes** |
-| P4 | Contraction (mean TR of consolidation / ATR14 at anchor) | <= 0.80 | 0.80 | Your proposal; measured on consolidation candles only | Loose -> unstable bases | none | yes | **yes** |
+| P4 | Contraction ratio <= 0.80: **choose the definition** | live gate: CONS_TR_OVER_ATR14_CURRENT; backtest: CONS_TR_OVER_ATR14_ANCHOR; spec key name says ATR5/ATR14 | **CONS_TR_OVER_ATR14_ANCHOR** for both | ATR5/ATR14 includes the anchor spike for consolidations under 5 candles (tight 3-candle case: 1.49 vs 0.48/0.53), so it rejects nearly every short base; using the anchor ATR keeps the denominator fixed | the wrong definition changes trade frequency materially | `legion/backtest/contraction.py` comparison + tests | yes | **yes** |
 | P5 | Max extension of pivot above SMA20 | 20% (testing 15/20/30) | choose after walk-forward; provisional 20% | Middle of the tested set | 15% may starve trades; 30% admits chasing | synthetic only | **yes, required** | **yes** |
 | P6 | Entry trigger + permitted range | buy-stop at consolidation high, range [P, P x 1.01], skip gap-opens above range | as current | Deterministic, no subjective labels | slippage on gaps | synthetic tests | yes | **yes** |
 | P7 | Parabolic exit configuration | none approved (exit_rules = []) | stop = consolidation low; half at 2R, stop to breakeven; ATR(14) x 3 trail; 20-session max hold | Bounded loss, banks gains, lets runners run, caps dead capital | Untested on real data | none | **yes, required** | **yes** |
@@ -53,3 +53,9 @@ defaults (quote age 60 s, drift 1%, earnings blackout 7 d, OI 500, contract vol 
 | C17 | Native Minervini trend template | proposal (8 published criteria + RS) | approve the criteria, with B8 as the RS definition | Removes the RS-rating dependency | diverges from the exact template | - | yes | Minervini native |
 | C18 | Exact indicator sources | unknown | owner names the platform, or TradingView script_id+version | Only you know which platform the specs came from | - | multiple same-named TV scripts found | - | EXACT Minervini, Weinstein, Turtle, CAN SLIM L |
 | D1 | Data providers | none beyond Robinhood/SEC/iShares | see docs/DATA_PROVIDERS.md | - | - | - | - | CAN SLIM I |
+
+## Added in Phase 6
+| ID | Item | Current | Recommended | Blocks activation |
+|---|---|---|---|---|
+| E1 | Session-aware report expiration (DAILY: next applicable session close; WEEKLY: final session of the following trading week; candidate <= report) | proposed, compatibility-tested, NOT enforced | adopt; then ask ChatGPT to write `valid_until` that way | no (reports must still be VERIFIED and evidence-backed) |
+| G1 | Owner activation sign-off file `state/acceptance/OWNER_ACTIVATION_SIGNOFF.json` | absent | create it yourself only after reviewing everything | **yes** |

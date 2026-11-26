@@ -15,7 +15,6 @@ if (-not (Test-Path "$Root\config.json")) {
 }
 & "$Root\.venv\Scripts\python.exe" -m pytest -q "$Repo\tests"
 if ($LASTEXITCODE -ne 0) { throw "tests failed on this host; not registering the task" }
-$xml = (Get-Content "$Repo\deploy\windows_task.xml" -Raw).Replace("__PYTHON__", "$Root\.venv\Scripts\python.exe").Replace("__CONFIG__", "$Root\config.json").Replace("__REPO__", $Repo)
-$tmp = "$env:TEMP\legion_task.xml"; $xml | Out-File -Encoding Unicode $tmp
-schtasks /Create /XML $tmp /TN LegionPaperService /F
-Write-Host "Registered task LegionPaperService. Next: python -m legion.rh_auth login ; then deploy\windows\start.ps1"
+Write-Host "Installed. NO scheduled task was registered."
+Write-Host "Next: edit $Root\config.json, run .\deploy\windows\reauth_robinhood.ps1, then the acceptance tests (docs/DEPLOYMENT_WINDOWS.md)."
+Write-Host "Register the task only after review: .\deploy\windows\register_task.ps1 -Root $Root  (it registers the task DISABLED)."

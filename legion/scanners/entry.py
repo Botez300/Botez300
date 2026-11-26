@@ -51,12 +51,12 @@ def confirm(sid, d, c, t, diag=None):
         age = (diag or {}).get("age_candles")
         rng = b[-(age or 0):] if age else []
         lo = min(x.l for x in rng) if rng else None; hi = max(x.h for x in rng[:-1]) if len(rng) > 1 else None
-        # contraction = mean true range of the consolidation candles only (anchor excluded) vs ATR14
-        seg = b[-(age + 1):] if age and len(b) > age else []
-        ctr = None if len(seg) < 2 else sum(max(x.h - x.l, abs(x.h - p.c), abs(x.l - p.c)) for p, x in zip(seg, seg[1:])) / (len(seg) - 1)
-        a14 = S.atr_wilder(b)
+        # contraction: method is explicit (default unchanged = CONS_TR_OVER_ATR14_CURRENT); see backtest/contraction.py
+        from ..backtest.contraction import ratio as _cratio
+        meth = t.get("contraction_method", "CONS_TR_OVER_ATR14_CURRENT")
+        crat = _cratio(meth, b, len(b) - 1 - age, len(b) - 1) if age else None
         return AND("ENTRY_PARABOLIC", [cmp("CONSOLIDATION_AGE_MIN", age, ">=", t["min_consolidation_candles"]), cmp("CONSOLIDATION_AGE_MAX", age, "<=", t["max_consolidation_candles"]),
-            cmp("RANGE_CONTRACTION_VS_ATR14", None if not a14 or ctr is None else ctr / a14, "<=", t["max_atr5_over_atr14"]),
+            cmp(f"RANGE_CONTRACTION[{meth}]", crat, "<=", t["max_atr5_over_atr14"]),
             cmp("BREAKOUT_OF_CONSOLIDATION_HIGH", px, ">", hi), cmp("NOT_EXTENDED_VS_SMA20_PCT", None if not S.sma(cl, 20) else 100 * (px / S.sma(cl, 20) - 1), "<=", t["max_extension_vs_sma20_pct"]),
             cmp("STOP_AT_OR_BELOW_CONSOLIDATION_LOW", stop, "<=", lo), inv, rr])
     return unv("ENTRY", f"no entry rules for {sid}")

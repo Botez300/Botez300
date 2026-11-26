@@ -41,6 +41,8 @@ class Orchestrator:
         from .evidence import audit_report_candidate
         audit = audit_report_candidate(c, now)
         if not cd.eligible: return {"outcome": "NOT_ELIGIBLE", "reasons": cd.reasons, "evidence_audit": audit}
+        if getattr(self, "observe_only", False):
+            return {"outcome": "OBSERVE_ONLY", "reasons": ["ACTIVATION_GATES_NOT_SATISFIED"], "evidence_audit": audit}
         if self.require_evidence and any(a["status"] != "VERIFIED" for a in audit):
             return {"outcome": "NOT_ELIGIBLE", "reasons": ["REPORT_CRITERIA_EVIDENCE_UNVERIFIED"], "evidence_audit": audit}
         if self.b.has_signal(c["signal_id"]): return {"outcome": "DUPLICATE_SIGNAL"}
