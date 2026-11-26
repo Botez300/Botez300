@@ -1,0 +1,16 @@
+{
+  "strategy": "MINERVINI_VCP_SEPA",
+  "status": "INCOMPLETE",
+  "source_document": null,
+  "source_sha256": null,
+  "note": "Original Legion scanner specification not available to the build. Fill params and exit_rules from the spec, set status COMPLETE, and record source_document + source_sha256. Do not guess values.",
+  "params": {
+    "sma_stack_periods": null,
+    "sma_long_rising_days": null,
+    "min_pct_above_52w_low": null,
+    "max_pct_below_52w_high": null,
+    "breakout_volume_multiple": null,
+    "min_rs_excess_return_pct": null
+  },
+  "exit_rules": []
+}

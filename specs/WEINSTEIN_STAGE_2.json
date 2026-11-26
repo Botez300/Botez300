@@ -1,0 +1,14 @@
+{
+  "strategy": "WEINSTEIN_STAGE_2",
+  "status": "INCOMPLETE",
+  "source_document": null,
+  "source_sha256": null,
+  "note": "Original Legion scanner specification not available to the build. Fill params and exit_rules from the spec, set status COMPLETE, and record source_document + source_sha256. Do not guess values.",
+  "params": {
+    "ma_weeks": null,
+    "ma_slope_weeks": null,
+    "breakout_volume_multiple": null,
+    "min_rs_excess_return_pct": null
+  },
+  "exit_rules": []
+}

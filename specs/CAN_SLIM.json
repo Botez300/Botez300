@@ -1,0 +1,14 @@
+{
+  "strategy": "CAN_SLIM",
+  "status": "INCOMPLETE",
+  "source_document": null,
+  "source_sha256": null,
+  "note": "Original Legion scanner specification not available to the build. Fill params and exit_rules from the spec, set status COMPLETE, and record source_document + source_sha256. Do not guess values.",
+  "params": {
+    "breakout_volume_multiple": null,
+    "max_extension_above_pivot_pct": null,
+    "min_eps_growth_pct": null,
+    "min_rs_excess_return_pct": null
+  },
+  "exit_rules": []
+}

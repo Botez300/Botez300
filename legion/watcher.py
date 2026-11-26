@@ -7,7 +7,8 @@ class Watcher:
         for it in self.src.list():
             key = (it.name, it.token)
             if key in self.seen: continue
-            self.seen.add(key); out.append(self.p.ingest(it, now))
+            self.seen.add(key); r = self.p.ingest(it, now); out.append(r)
+            if getattr(r, "deferred", False): self.seen.discard(key)     # partial sync: retry next poll
         return out
     def run(self, interval=30, stop=lambda: False):
         while not stop():

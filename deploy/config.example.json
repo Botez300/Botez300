@@ -1,0 +1,12 @@
+{
+  "source": "local",
+  "local_dir": "G:/My Drive/Legion Quant Capital/03_Verified_Signals",
+  "drive_folder_id": "1j-_ZWjfYalftnVVldnEiV-E4WTdhffo7",
+  "service_account_file": null,
+  "oauth_token_file": null,
+  "state_dir": "state",
+  "poll_s": 60,
+  "daily_deadline_et": "09:15",
+  "paper_start_equity": 100000.0,
+  "option_kinds": []
+}
