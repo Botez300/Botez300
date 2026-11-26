@@ -14,9 +14,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip, cache-dependency-path: "requirements*.txt" }
-      - run: pip install -r requirements-dev.txt -r requirements-drive.txt
+      - run: pip install -r requirements-dev.txt -r requirements-drive.txt bandit
       - name: Lint
         run: ruff check legion tests scripts
+      - name: Security scan (bandit, fail on medium+)
+        run: bandit -q -r legion -ll
       - name: Schema + fixture validation
         run: python scripts/validate_schema.py
       - name: Dependency consistency and vulnerability audit
@@ -24,6 +26,10 @@ jobs:
           pip check
           pip-audit -r requirements.txt
           pip-audit -r requirements-drive.txt
+      - name: Genuine-report integrity (pinned hash + pinned schema blob)
+        run: |
+          test "$(git hash-object schemas/legion_signal_v1_1.schema.json)" = "6f3dbea739c1422b02329bed4f50740b8124c992"
+          echo "443e77ac043e0432857a3640bca861e22901204431985c0496e7a44e9633373c  fixtures/drive_genuine/DAILY_2026-11-26_123541.json" | sha256sum -c -
       - name: Tests (synthetic + recorded fixtures; no network, no broker, no Claude/Google/Robinhood auth)
         run: python -m pytest -v
       - name: Guard - no real order tool referenced outside the blocklist/injection patterns

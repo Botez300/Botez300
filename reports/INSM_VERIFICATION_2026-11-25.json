@@ -1,0 +1,90 @@
+{
+  "report_id": "DAILY_2026-11-26_123541",
+  "ticker": "INSM",
+  "observation_date": "2026-11-25",
+  "source": "ROBINHOOD_MCP get_equity_historicals interval=day bounds=regular adjustment=split (default)",
+  "retrieved_at": "2026-11-26 (Claude connector session, read-only)",
+  "methodology": {
+    "bb": "SMA20 +/- 2 x population std (ddof=0) of the 20 completed closes ending 2026-11-25",
+    "relvol": "volume(2026-11-25) / mean volume of the preceding 20 completed candles",
+    "roc5": "100 x C(11-25)/C(11-18) - 100",
+    "rsi14": "Wilder smoothing; reported value uses a 61-bar warmup (from 2026-09-01); full warmup from 2026-01-02 (227 bars) also shown",
+    "common_anchor": "all four native conditions on the same completed candle within the latest 10"
+  },
+  "results": [
+    {
+      "metric": "close",
+      "reported": 170.31,
+      "calculated": 170.31,
+      "difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "metric": "bb_mid20",
+      "reported": null,
+      "calculated": 125.3267,
+      "status": "COMPUTED"
+    },
+    {
+      "metric": "bb_pop_std20",
+      "reported": null,
+      "calculated": 18.9088,
+      "status": "COMPUTED"
+    },
+    {
+      "metric": "upper_bb20",
+      "reported": 163.1443,
+      "calculated": 163.144298,
+      "difference": -2e-06,
+      "status": "PASS"
+    },
+    {
+      "metric": "relative_volume",
+      "reported": 3.8127,
+      "calculated": 3.812715,
+      "difference": 1.5e-05,
+      "status": "PASS"
+    },
+    {
+      "metric": "roc5_pct",
+      "reported": 42.1619,
+      "calculated": 42.161937,
+      "difference": 3.7e-05,
+      "status": "PASS"
+    },
+    {
+      "metric": "rsi14 (61-bar warmup)",
+      "reported": 82.97,
+      "calculated": 82.9707,
+      "difference": 0.0007,
+      "status": "PASS"
+    },
+    {
+      "metric": "rsi14 (full 227-bar warmup)",
+      "reported": 82.97,
+      "calculated": 82.936,
+      "difference": -0.034,
+      "status": "PASS_WITH_WARMUP_SENSITIVITY"
+    },
+    {
+      "metric": "native common-anchor qualification (last 10 candles)",
+      "reported": true,
+      "calculated": [
+        "2026-11-25"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "native_vs_exact": "LEGION_NATIVE reproduction only; equivalence to the proprietary platform scanner is UNVERIFIED",
+  "actionability": {
+    "status": "NOT ACTIONABLE",
+    "reasons": [
+      "report publication_status DRAFT",
+      "report expired at publication (valid_until == generated_at)",
+      "report candidates = []",
+      "anchor candle is the latest candle: no consolidation exists (entry confirmation FAIL by design: no chasing)",
+      "EVENT RISK FLAG: 2026-11-24/25 intraday ranges 0.31% / 0.24% on 78.9M / 31.4M shares (~17.7x 20-day avg) - price pinned near $170, consistent with a pending corporate event such as an acquisition; NOT verified"
+    ]
+  },
+  "market_session_note": "2026-11-26 is a NYSE holiday (Thanksgiving); 2026-11-25 is the latest completed session; no intraday data is missing"
+}

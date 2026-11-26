@@ -31,17 +31,78 @@
   "entry_confirmation": {
     "approved": false,
     "defined": true,
-    "status": "PROPOSED",
+    "status": "PROPOSED - AWAITING OWNER APPROVAL",
     "proposed_thresholds": {
       "min_reward_risk": 2.0,
       "max_stop_distance_pct": 8.0,
       "min_consolidation_candles": 3,
       "max_consolidation_candles": 10,
       "max_atr5_over_atr14": 0.8,
-      "max_extension_vs_sma20_pct": 30.0
+      "max_extension_vs_sma20_pct": 20.0,
+      "max_adverse_entry_drift_pct": 1.0,
+      "max_equity_spread_pct_of_mid": 0.5,
+      "max_quote_age_s": 60
+    },
+    "extension_variants_under_test": [
+      15.0,
+      20.0,
+      30.0
+    ],
+    "trigger_definition": {
+      "anchor": "completed candle where all four native conditions hold",
+      "consolidation": "candles anchor+1..anchor+k, 3<=k<=10",
+      "pivot": "max high of consolidation candles",
+      "permitted_entry_range": "[pivot, pivot x 1.01]; skip if the trigger candle opens above the range",
+      "technical_invalidation": "min low of consolidation candles",
+      "initial_stop": "per exit variant (consolidation low default); skip if > 8% below entry",
+      "contraction": "mean true range of consolidation candles / ATR14 at anchor <= 0.80",
+      "extension": "pivot / SMA20 - 1 <= max_extension",
+      "reward_risk": "(configured profit target - entry) / (entry - stop) >= 2; for R-multiple targets this is satisfied by construction"
     }
   },
   "max_candidates": 10,
   "exit_rules": [],
-  "label": "LEGION_NATIVE - never an exact platform signal"
+  "label": "LEGION_NATIVE - never an exact platform signal",
+  "exit_research": {
+    "status": "RESEARCH VARIANTS - NOT APPROVED",
+    "stops": [
+      "consolidation_low",
+      "atr2"
+    ],
+    "targets": [
+      null,
+      "2R",
+      "3R",
+      "partial2R",
+      "atr3"
+    ],
+    "trails": [
+      null,
+      "pct10",
+      "atr3",
+      "sma10",
+      "prior_low",
+      "chandelier"
+    ],
+    "max_hold_sessions": [
+      5,
+      10,
+      20
+    ],
+    "recommended_for_approval": {
+      "stop": "consolidation_low",
+      "target": "partial2R",
+      "trail": "atr3",
+      "max_hold": 20,
+      "rationale": "Bounded initial risk at the technical invalidation; banks half at 2R and moves the stop to breakeven; ATR trail lets a continuation run; 20-session cap limits dead capital. NOT validated by backtest: no point-in-time universe was available."
+    },
+    "protections_proposed": {
+      "failed_breakout": "close back below pivot within 3 sessions",
+      "earnings_blackout": "exit before a scheduled report inside 7 calendar days",
+      "volatility_expansion": "ATR5/ATR14 > 2.0",
+      "liquidity_deterioration": "spread > 0.50% of mid or 5-day avg volume < 50% of 20-day",
+      "halt": "quote state != active -> no action possible; flag",
+      "gap_through_stop": "modeled: fill at open, never at the stop price"
+    }
+  }
 }

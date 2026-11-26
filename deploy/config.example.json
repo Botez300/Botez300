@@ -7,11 +7,15 @@
   "state_dir": "state",
   "poll_s": 60,
   "daily_deadline_et": "09:15",
-  "paper_start_equity": 100000.0,
+  "paper_start_equity": null,
   "option_kinds": [],
   "claude_escalation": {
     "enabled": false,
     "max_per_day": 5,
     "model": null
+  },
+  "paper_fill_slippage": 0.001,
+  "strategy_variants": {
+    "PARABOLIC_MOMENTUM": "PARABOLIC_NATIVE"
   }
 }

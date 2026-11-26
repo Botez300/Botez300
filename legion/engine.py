@@ -12,10 +12,11 @@ from .strategies import verify_candidate
 class Orchestrator:
     def __init__(self, ledger, broker: PaperBroker, market, client, decisions_path, spec_dir=None, sp=SystemParams(),
                  option_kinds=(), limits=Limits(), rules=OptionRules(), alert=lambda *a, **k: None,
-                 variants=None, require_report_evidence=False):
+                 variants=None, require_report_evidence=False, state_dir=None, fill_slippage=None):
         self.ledger, self.b, self.m, self.rh = ledger, broker, market, client
         self.dp, self.spec_dir, self.sp, self.kinds, self.L, self.R, self.alert = decisions_path, spec_dir, sp, option_kinds, limits, rules, alert
         self.variants, self.require_evidence = variants or {}, require_report_evidence
+        self.state_dir, self.fill_slippage = state_dir, fill_slippage
     def _log(self, rec):
         with open(self.dp, "a") as f: f.write(json.dumps(rec, default=str) + "\n")
 
@@ -25,7 +26,8 @@ class Orchestrator:
         d = evaluate_report(raw, item.name, now, item.size, getattr(item, "md5", None), self.ledger.ids, self.ledger.hashes, getattr(item, "age", 1e9))
         if d.deferred: self._log({"file": item.name, "outcome": "DEFERRED_PARTIAL_SYNC"}); return d
         if not d.tradeable:
-            self.ledger.record(d, "REJECTED") if not any(x.startswith("DUPLICATE") for x in d.reasons) else None
+            if not any(x.startswith("DUPLICATE") for x in d.reasons): self.ledger.record(d, "REJECTED")
+            elif hasattr(self.ledger, "attempt"): self.ledger.attempt(d, "REJECTED_DUPLICATE")
             self._log({"file": item.name, "outcome": "REJECTED", "reasons": d.reasons}); return d
         self.ledger.record(d, "ADMITTED")                      # recorded first => a crash can never double-process a report
         for cd, c in zip(d.candidates, d.doc["candidates"]):
@@ -42,8 +44,13 @@ class Orchestrator:
         if self.require_evidence and any(a["status"] != "VERIFIED" for a in audit):
             return {"outcome": "NOT_ELIGIBLE", "reasons": ["REPORT_CRITERIA_EVIDENCE_UNVERIFIED"], "evidence_audit": audit}
         if self.b.has_signal(c["signal_id"]): return {"outcome": "DUPLICATE_SIGNAL"}
+        from . import constitution as C
+        if C.latched(self.state_dir): return {"outcome": "BLOCKED", "reasons": ["RISK_HALT_LATCHED_MANUAL_RESUME_REQUIRED"]}
         h = halt_reason(self.b.account(), self.L)
-        if h: self.alert("HALT", h); return {"outcome": "BLOCKED", "reasons": [h]}
+        if h:
+            self.alert("HALT", h)
+            if self.state_dir: C.trip(self.state_dir, h, self.b.account(), self.alert)
+            return {"outcome": "BLOCKED", "reasons": [h]}
         try: snap = self.m.snapshot(c["ticker"], now)
         except Exception as e: self.alert("DATA_FAILURE", f"{c['ticker']}: {e}"); return {"outcome": "BLOCKED", "reasons": [f"MARKET_DATA_UNAVAILABLE {type(e).__name__}"]}
         var = self.variants.get(c["originating_strategy"])
@@ -51,6 +58,10 @@ class Orchestrator:
         else: ok, crit, bad = verify_candidate(c, snap, self.spec_dir, self.sp) if self.spec_dir else verify_candidate(c, snap, sp=self.sp)
         if not ok: return {"outcome": "VERIFICATION_FAILED", "reasons": bad, "criteria": crit}
         acct, px = self.b.account(), snap.quote.price
+        ask = getattr(snap.quote, "ask", None)
+        if self.fill_slippage is not None:                       # conservative paper fill: buy at ask + slippage, never at last
+            if not ask: return {"outcome": "BLOCKED", "reasons": ["NO_ASK_FOR_CONSERVATIVE_FILL"]}
+            px = ask * (1 + self.fill_slippage)
         sz = size_stock(acct, c["ticker"], px, c["technical_invalidation"], c["trade_direction"], self.L)
         if sz.qty >= 1:
             try:

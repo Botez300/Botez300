@@ -1,3 +1,5 @@
+> **Superseded for decisions by `docs/OWNER_APPROVALS.md` (Phase 5).** This file is kept as history.
+
 # Assumptions: approval status (updated Phase 4, 2026-11-26)
 
 "APPROVED (Phase 4)" means approved by you in the Phase 4 instructions. The approval covers independent Legion-native paper research only;

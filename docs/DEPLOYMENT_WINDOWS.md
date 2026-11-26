@@ -1,65 +1,31 @@
-# Windows deployment (primary target): PAPER mode
+# Windows deployment guide (primary host): PAPER mode
 
-**Not installed or tested on any real Windows machine.** Treat each step as unverified until you run it.
+**Status: NOT installed or tested on your PC.** The cloud build environment is not your desktop. Every step below needs to be confirmed on the machine.
+No administrator rights are needed.
 
-## 1. Prerequisites
-- Windows 10/11, Python 3.12 (`py -3.12`), and Git.
-- Google Drive for desktop (for local sync). Set `Legion Quant Capital/03_Verified_Signals` to **Mirror** or **Available offline**.
-- Optional: Claude Code CLI, logged in (for advisory escalation).
+| # | Step | Command / action |
+|---|---|---|
+| 1 | Python 3.12 (64-bit) | Install from python.org. Check: `py -3.12 --version` |
+| 2 | Git | Install Git for Windows. Check: `git --version` |
+| 3 | Claude Code (optional, for advisory escalation) | Follow Anthropic's official install instructions, then `claude --version` and log in |
+| 4 | Checkout | `git clone https://github.com/Botez300/Botez300 C:\Legion\Botez300` |
+| 5 | Draft PR branch | `cd C:\Legion\Botez300; git checkout claude/cool-fermi-5sk4s9` |
+| 6 | Script policy (per user, once) | `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` (Microsoft-documented; not a bypass) |
+| 7 | venv + dependencies + tests + task | `.\deploy\windows\install.ps1 -Root C:\Legion`. Creates the venv, installs requirements, runs the full test suite and registers the task only if all tests pass |
+| 8 | Google Drive for desktop | Install, sign in as the Drive owner |
+| 9 | Sync | Set `Legion Quant Capital\03_Verified_Signals` to *Mirror* or *Available offline*. Find the real path in Explorer (often `G:\My Drive\...`; **check it, don't assume**) |
+| 10 | Configure | Edit `C:\Legion\config.json`: `local_dir` (your real path from step 9), `state_dir` = `C:/Legion/state`, `paper_start_equity` (**your explicit choice; the service refuses to start while it is null**) |
+| 11 | Secrets | None in config or env files. Robinhood tokens go to Windows Credential Manager (step 12). Drive needs no credentials with desktop sync |
+| 12 | Robinhood login | `.\deploy\windows\reauth_robinhood.ps1 -Root C:\Legion` (browser OAuth). It prints an authenticated SPY quote on success |
+| 13 | Read-only integration test | `$env:LEGION_LIVE_RH="1"; C:\Legion\.venv\Scripts\python -m pytest tests -k live -v`. This is the first genuinely authenticated test |
+| 14 | Task Scheduler | Registered in step 7 as `LegionPaperService` (logon + boot triggers, restart on failure, LeastPrivilege, single instance) |
+| 15 | Start | `.\deploy\windows\start.ps1 -Root C:\Legion` |
+| 16 | Status | `.\deploy\windows\status.ps1 -Root C:\Legion` (task state, heartbeat, last alerts, token presence), or `python -m legion.ops status --state C:\Legion\state` |
+| 17 | Normal stop | `.\deploy\windows\stop.ps1 -Root C:\Legion` (STOP_REQUEST; exits within 60 s) |
+| 18 | Emergency stop | `.\deploy\windows\emergency_stop.ps1 -Root C:\Legion`. The process is ended and stays down until you delete `state\EMERGENCY_STOP` |
+| 19 | Reboot recovery | The boot/logon trigger restarts it. SQLite ledger, paper state and executed-signal list reload from `state\`. The single-instance lock prevents duplicates |
+| 20 | Logs / troubleshooting | `state\logs\legion.log` (rotating), `state\alerts.jsonl`, `state\decisions.jsonl`, `state\outbox\` (daily journal and risk report), `schtasks /Query /TN LegionPaperService /V` |
 
-## 2. Install
-```powershell
-git clone https://github.com/Botez300/Botez300 C:\Legion\Botez300
-cd C:\Legion\Botez300
-powershell -ExecutionPolicy Bypass -File deploy\windows\install.ps1 -Root C:\Legion
-```
-The script does the following:
-- creates `C:\Legion\.venv`
-- installs `requirements*.txt` + `keyring`
-- copies `deploy\config.example.json` to `C:\Legion\config.json`
-- runs the test suite and refuses to register the task if any test fails
-- registers the `LegionPaperService` task (logon/boot triggers, restart on failure, 60 s polling inside the process)
-
-## 3. Configure
-Edit `C:\Legion\config.json`:
-- `"source": "local"`
-- `"local_dir": "G:/My Drive/Legion Quant Capital/03_Verified_Signals"`
-- `"state_dir": "C:/Legion/state"`
-- optional `"strategy_variants": {"PARABOLIC_MOMENTUM": "PARABOLIC_NATIVE"}`
-
-Environment template: `deploy\env.example`. No secrets go in either file.
-
-## 4. Robinhood authentication (interactive, once, and again whenever tokens expire)
-```powershell
-powershell -File deploy\windows\reauth_robinhood.ps1 -Root C:\Legion
-```
-- This opens Robinhood's OAuth login.
-- Tokens are stored in **Windows Credential Manager** only (`keyring`). The code refuses to store them anywhere else.
-- Refresh is automatic through the MCP SDK.
-- If refresh fails, the service fails closed, raises `CONNECTION_LOST`, and you run the script again.
-
-## 5. Operate
-| Action | Command |
-|---|---|
-| Start | `deploy\windows\start.ps1` (refuses while `EMERGENCY_STOP` exists) |
-| Graceful stop (exits within 60 s) | `deploy\windows\stop.ps1` |
-| Restart | `deploy\windows\restart.ps1` |
-| Emergency shutdown | `deploy\windows\emergency_stop.ps1`, then delete `state\EMERGENCY_STOP` manually to resume |
-| Status, heartbeat, alerts, token presence | `deploy\windows\status.ps1` |
-
-- Logs: `C:\Legion\state\logs\legion.log` (rotating, 10 x 5 MB).
-- Alerts: `state\alerts.jsonl`.
-- Decisions: `state\decisions.jsonl`.
-- Reboot recovery: the task triggers at boot and logon; ledger and paper state reload from `state\`; duplicates are prevented by the content-hash ledger and the executed-signal list.
-
-## 6. Acceptance (do on the machine)
-1. `install.ps1` test step passes.
-2. `reauth_robinhood.ps1` prints an SPY quote. This is the first genuinely authenticated read-only test.
-3. `$env:LEGION_LIVE_RH="1"; .venv\Scripts\python -m pytest tests -k live` passes.
-4. Heartbeat updates each minute.
-5. A TEST_ONLY file in Drive is rejected, with no order.
-6. Kill the process: the task restarts it.
-7. `emergency_stop.ps1`: the service stays down.
-
-## macOS
-Use `deploy/macos/install.sh`, `start.sh`, `stop.sh`, `emergency_stop.sh` and `reauth_robinhood.sh`, with the launchd plist (`KeepAlive`). Tokens go to the macOS Keychain.
+## Known caveat
+It is not yet confirmed that Robinhood's OAuth server accepts the app's own client registration. Robinhood documents connecting an *AI platform* (`claude mcp add ...`).
+If step 12 fails at registration, stop. **Do not work around it.** Report the error; the fallback options are listed in `docs/ROBINHOOD_MCP.md`.

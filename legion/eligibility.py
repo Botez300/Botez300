@@ -62,7 +62,7 @@ def evaluate_report(raw: bytes, filename: str, now: datetime, expected_size=None
                     seen_ids=frozenset(), seen_hashes=frozenset(), age_s=1e9, settle_s=120) -> ReportDecision:
     d = ReportDecision(filename, sha256(raw))
     d.integrity_ok = (expected_size is None or expected_size == len(raw)) and \
-                     (expected_md5 is None or expected_md5 == hashlib.md5(raw).hexdigest())
+                     (expected_md5 is None or expected_md5 == hashlib.md5(raw, usedforsecurity=False).hexdigest())   # Drive md5Checksum comparison only; SHA-256 is the integrity hash
     if not d.integrity_ok:
         d.reasons.append("INTEGRITY_MISMATCH"); d.deferred = age_s < settle_s; return d
     try: doc = json.loads(raw.decode("utf-8"))
