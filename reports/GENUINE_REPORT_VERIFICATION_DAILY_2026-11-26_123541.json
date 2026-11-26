@@ -1,0 +1,102 @@
+{
+  "sha256": "443e77ac043e0432857a3640bca861e22901204431985c0496e7a44e9633373c",
+  "schema_blob_sha": "6f3dbea739c1422b02329bed4f50740b8124c992",
+  "schema_v1_1_errors": [],
+  "checks": {
+    "report_id_matches_filename": true,
+    "report_id_type_prefix": true,
+    "generated_at": "2026-11-26T12:35:41-05:00",
+    "market_data_as_of": "2026-11-25T16:00:00-05:00",
+    "valid_until": "2026-11-26T12:35:41-05:00",
+    "market_data_is_last_completed_session_close": true,
+    "calendar_state_at_generation": "CLOSED_HOLIDAY",
+    "report_market_session": "CLOSED_THANKSGIVING",
+    "session_consistent": true,
+    "valid_until_minus_generated_s": 0.0,
+    "expired_at_check_time": true,
+    "publication_status": "DRAFT",
+    "test_only": false,
+    "research_only": true,
+    "execution_authorized": false,
+    "candidates": 0
+  },
+  "provenance": [
+    {
+      "provider": "calendar",
+      "ref": "https://www.nyse.com/trade/hours-calendars",
+      "legion_status": "reference document"
+    },
+    {
+      "provider": "reuters",
+      "ref": "https://www.reuters.com/business/nasdaq-futures-slide-over-2-fresh-us-tariff-concerns-inflation-data-focus-2026-11-25/",
+      "legion_status": "NOT an authorized Legion source: claims UNVERIFIED"
+    },
+    {
+      "provider": "indices",
+      "ref": "https://portfolio-terminal.com/markets/stock-market-close/november-25-2026",
+      "legion_status": "NOT an authorized Legion source: claims UNVERIFIED"
+    },
+    {
+      "provider": "sectors",
+      "ref": "https://byliem.com/en/heatmap/us/2026-11-25",
+      "legion_status": "NOT an authorized Legion source: claims UNVERIFIED"
+    },
+    {
+      "provider": "breadth",
+      "ref": "https://swingtradebot.com/market-recap/2026-11-25",
+      "legion_status": "NOT an authorized Legion source: claims UNVERIFIED"
+    },
+    {
+      "provider": "schema",
+      "ref": "https://github.com/Botez300/Botez300/blob/858e491/schemas/legion_signal_v1_1.schema.json",
+      "legion_status": "reference document"
+    },
+    {
+      "provider": "native",
+      "ref": "https://github.com/Botez300/Botez300/blob/858e491/specs/native/PARABOLIC_NATIVE.json",
+      "legion_status": "reference document"
+    },
+    {
+      "provider": "Robinhood MCP",
+      "ref": "Robinhood MCP get_equity_historicals (regular daily split-adjusted; 61 bars 2026-09-01 through 2026-11-25)",
+      "legion_status": "authorized (reproducible)"
+    },
+    {
+      "provider": "Robinhood MCP",
+      "ref": "Robinhood MCP get_equity_fundamentals (market_date 2026-11-25)",
+      "legion_status": "authorized (reproducible)"
+    }
+  ],
+  "ingestion_1": {
+    "schema_valid": true,
+    "tradeable": false,
+    "reasons": [
+      "INVALID_STATUS DRAFT",
+      "EXPIRED valid_until=2026-11-26T12:35:41-05:00"
+    ]
+  },
+  "ingestion_2": {
+    "tradeable": false,
+    "reasons": [
+      "INVALID_STATUS DRAFT",
+      "EXPIRED valid_until=2026-11-26T12:35:41-05:00",
+      "DUPLICATE_REPORT_ID",
+      "DUPLICATE_CONTENT_HASH"
+    ]
+  },
+  "sqlite_attempts": [
+    {
+      "filename": "DAILY_2026-11-26_123541.json",
+      "report_id": "DAILY_2026-11-26_123541",
+      "outcome": "REJECTED"
+    },
+    {
+      "filename": "DAILY_2026-11-26_123541.json",
+      "report_id": "DAILY_2026-11-26_123541",
+      "outcome": "REJECTED_DUPLICATE"
+    }
+  ],
+  "paper_orders": 0,
+  "journal_lines": 0,
+  "checked_at": "2026-11-26T17:48:46.115457+00:00"
+}

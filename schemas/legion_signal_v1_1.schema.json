@@ -1,0 +1,384 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://legion.local/schemas/legion_signal_v1_1.schema.json",
+  "title": "Legion Quant Capital signal report v1 (v1.1, evidence-carrying)",
+  "description": "STRUCTURAL validity only. Trading eligibility is decided separately by legion.eligibility; a schema-valid report (e.g. TEST_ONLY) is not thereby tradeable and is never brokerage authorization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "scanner_rules_version",
+    "report_id",
+    "report_type",
+    "generated_at",
+    "market_data_as_of",
+    "valid_until",
+    "market_session",
+    "market_regime",
+    "leading_sectors",
+    "leading_industries",
+    "publication_status",
+    "test_only",
+    "research_only",
+    "execution_authorized",
+    "sources",
+    "strategy_sections",
+    "candidates",
+    "missing_data"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.1"
+    },
+    "scanner_rules_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "report_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_\\-\\.]{3,80}$"
+    },
+    "report_type": {
+      "enum": [
+        "DAILY",
+        "WEEKLY"
+      ]
+    },
+    "generated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "market_data_as_of": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "valid_until": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "market_session": {
+      "type": "string"
+    },
+    "market_regime": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "leading_sectors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "leading_industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "publication_status": {
+      "enum": [
+        "TEST_ONLY",
+        "DRAFT",
+        "VERIFIED",
+        "REJECTED",
+        "EXPIRED"
+      ]
+    },
+    "test_only": {
+      "type": "boolean"
+    },
+    "research_only": {
+      "const": true
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "sources": {
+      "type": "array"
+    },
+    "strategy_sections": {
+      "type": "array"
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ticker",
+          "company_name",
+          "originating_strategy",
+          "additional_qualifying_strategies",
+          "signal_id",
+          "signal_timestamp",
+          "signal_classification",
+          "verification_status",
+          "individual_criteria_results",
+          "current_price",
+          "proposed_entry",
+          "entry_zone",
+          "technical_invalidation",
+          "proposed_price_targets",
+          "relative_strength_vs_spy",
+          "volume_confirmation",
+          "earnings_date",
+          "options_eligibility",
+          "trade_direction",
+          "risk_flags",
+          "source_references",
+          "missing_data",
+          "expiration_timestamp"
+        ],
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9.\\-]{0,9}$"
+          },
+          "company_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "originating_strategy": {
+            "enum": [
+              "CAN_SLIM",
+              "MINERVINI_VCP_SEPA",
+              "TURTLE",
+              "WEINSTEIN_STAGE_2",
+              "MAGIC_FORMULA",
+              "PARABOLIC_MOMENTUM"
+            ]
+          },
+          "additional_qualifying_strategies": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "CAN_SLIM",
+                "MINERVINI_VCP_SEPA",
+                "TURTLE",
+                "WEINSTEIN_STAGE_2",
+                "MAGIC_FORMULA",
+                "PARABOLIC_MOMENTUM"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "signal_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_\\-\\.]{3,120}$"
+          },
+          "signal_timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "signal_classification": {
+            "enum": [
+              "BUY_NOW",
+              "WATCH",
+              "PENDING",
+              "EXIT",
+              "REJECTED"
+            ]
+          },
+          "verification_status": {
+            "enum": [
+              "VERIFIED",
+              "UNVERIFIED",
+              "FAILED"
+            ]
+          },
+          "individual_criteria_results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "criterion_id",
+                "status",
+                "source",
+                "observed_at",
+                "value",
+                "threshold",
+                "methodology"
+              ],
+              "properties": {
+                "criterion_id": {
+                  "type": "string"
+                },
+                "status": {
+                  "enum": [
+                    "PASS",
+                    "FAIL",
+                    "UNVERIFIED"
+                  ]
+                },
+                "value": {},
+                "source": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "observed_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "threshold": {},
+                "methodology": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source_reference": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "current_price": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "proposed_entry": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": 0
+          },
+          "entry_zone": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "low",
+              "high"
+            ],
+            "properties": {
+              "low": {
+                "type": "number"
+              },
+              "high": {
+                "type": "number"
+              }
+            }
+          },
+          "technical_invalidation": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": 0
+          },
+          "proposed_price_targets": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "relative_strength_vs_spy": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "volume_confirmation": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "confirmed"
+            ],
+            "properties": {
+              "confirmed": {
+                "type": "boolean"
+              },
+              "ratio": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          },
+          "earnings_date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "options_eligibility": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "eligible"
+            ],
+            "properties": {
+              "eligible": {
+                "type": "boolean"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          "trade_direction": {
+            "enum": [
+              "LONG",
+              "SHORT"
+            ]
+          },
+          "risk_flags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "source_references": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "missing_data": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expiration_timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "missing_data": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

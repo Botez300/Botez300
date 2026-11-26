@@ -1,0 +1,60 @@
+{
+  "format": 2,
+  "classification": "LEGION_NATIVE",
+  "variant_of": "CAN_SLIM",
+  "scanner": "CAN_SLIM_NATIVE",
+  "status": "NATIVE_DEFINED",
+  "source_document": "specs/source/legion_scanner_instructions_2026-11-26.md",
+  "source_sha256": "d51e007509b1fb89edb2e7941136405affe39d24208810103dcfc3e87106c28d",
+  "mechanical_semantics_approved": true,
+  "semantics_approval": {
+    "approved_by": "owner",
+    "approved_in": "Phase 4 instructions, 2026-11-26",
+    "scope": "independent Legion-native paper research only; not proprietary-platform equivalence"
+  },
+  "activation": {
+    "approved": false,
+    "note": "entries need approved entry-confirmation thresholds and closed data gaps"
+  },
+  "params": {
+    "universe": "IWM_OFFICIAL_HOLDINGS_POINT_IN_TIME",
+    "liquidity": {
+      "min_price": 5.0,
+      "min_median_dollar_volume_20d": 5000000,
+      "max_spread_pct_of_mid": 0.005
+    },
+    "eps_growth_min": 0.25,
+    "accepted_eps_bases": [
+      "GAAP_DILUTED"
+    ],
+    "n_band_pct": 0.15,
+    "rp_yearly_min": 80,
+    "analyst_lookback_days": 90,
+    "market_index": null,
+    "min_market_bars": 290,
+    "sma200_lookback_sessions": 90
+  },
+  "pending_semantics": [],
+  "data_gaps": [
+    "L: RP(yearly) for SPX500 unavailable (must stay UNVERIFIED per owner)",
+    "I: no supported source of dated individual analyst Buy ratings",
+    "Q4 diluted EPS is not separately filed (Q4 quarters stay UNVERIFIED)"
+  ],
+  "entry_confirmation": {
+    "approved": false,
+    "defined": true,
+    "status": "PROPOSED",
+    "proposed_thresholds": {
+      "min_reward_risk": 2.0,
+      "max_stop_distance_pct": 8.0,
+      "pivot_lookback": 50,
+      "breakout_volume_x": 1.4,
+      "pullback_max_pct_above_sma50": 5.0
+    }
+  },
+  "max_candidates": 20,
+  "exit_rules": [],
+  "label": "LEGION_NATIVE - never an exact platform signal",
+  "m_definition": "stock close > own SMA200 and SMA200 > SMA200 90 sessions earlier (approved)",
+  "regime_overlay": "SPY/QQQ/IWM separate risk overlay"
+}

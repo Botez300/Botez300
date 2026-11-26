@@ -1,0 +1,1 @@
+{"data":{"results":[{"symbol":"SPY","interval":"day","bounds":"regular","indicators":[{"type":"sma","params":{"period":50},"series":[{"begins_at":"2026-11-25T00:00:00Z","value":757.8888000000001}]}]}]}}

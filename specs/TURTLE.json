@@ -1,0 +1,44 @@
+{
+  "format": 2,
+  "strategy": "TURTLE",
+  "status": "DEFINED_PENDING_APPROVAL",
+  "source_document": "specs/source/legion_scanner_instructions_2026-11-26.md",
+  "source_sha256": "d51e007509b1fb89edb2e7941136405affe39d24208810103dcfc3e87106c28d",
+  "activation": {
+    "approved": false,
+    "approved_by": null,
+    "approved_at": null,
+    "note": "Mechanical scanning runs; NO trade entry may originate from this strategy until the owner approves the pending semantics, data gaps are closed, and entry-confirmation rules are defined."
+  },
+  "params": {
+    "universe": "EXISTING",
+    "liquidity": {
+      "min_price": 5.0,
+      "min_median_dollar_volume_20d": 5000000,
+      "max_spread_pct_of_mid": null
+    },
+    "indicator": "Turtle Trading Strategy (Long-Only)",
+    "parameter_tuple": "(yes, yes, yes, yes, 2)"
+  },
+  "pending_semantics": [
+    "meaning of parameter tuple",
+    "skip-rule and state-transition logic (not to be invented)"
+  ],
+  "data_gaps": [
+    "Platform System 1/System 2 entry signals unavailable from Robinhood"
+  ],
+  "max_candidates": 10,
+  "entry_confirmation": {
+    "defined": false,
+    "note": "Separate from mechanical qualification; rules not yet specified by owner."
+  },
+  "exit_rules": [],
+  "buy_now_policy": "Turtle-only qualification never becomes BUY_NOW or a portfolio replacement",
+  "diagnostics_only": [
+    "daily RSI>50",
+    "weekly RSI>50",
+    "monthly RSI>50"
+  ],
+  "research": "classic 20/55 Donchian, separately labeled",
+  "classification": "EXACT_PLATFORM"
+}

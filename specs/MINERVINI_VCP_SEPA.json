@@ -1,0 +1,52 @@
+{
+  "format": 2,
+  "strategy": "MINERVINI_VCP_SEPA",
+  "status": "DEFINED_PENDING_APPROVAL",
+  "source_document": "specs/source/legion_scanner_instructions_2026-11-26.md",
+  "source_sha256": "d51e007509b1fb89edb2e7941136405affe39d24208810103dcfc3e87106c28d",
+  "activation": {
+    "approved": false,
+    "approved_by": null,
+    "approved_at": null,
+    "note": "Mechanical scanning runs; NO trade entry may originate from this strategy until the owner approves the pending semantics, data gaps are closed, and entry-confirmation rules are defined."
+  },
+  "params": {
+    "universe": "US_COMMON",
+    "liquidity": {
+      "min_price": 5.0,
+      "min_median_dollar_volume_20d": 5000000,
+      "max_spread_pct_of_mid": null
+    },
+    "min_market_cap": 2000000000,
+    "daily_band_pct": 0.07,
+    "weekly_band_pct": 0.2,
+    "volume_offsets": [
+      30,
+      25,
+      20,
+      15,
+      10,
+      5
+    ]
+  },
+  "pending_semantics": [
+    "Range(n,o) semantics (incl. weekly offset 0 = current completed week)",
+    "float equality for Range(100,1) High unchanged"
+  ],
+  "data_gaps": [
+    "Provider signal 'Meets All 10 Trend Template Criteria' unavailable; the ten exact criteria were not supplied"
+  ],
+  "max_candidates": 10,
+  "entry_confirmation": {
+    "defined": false,
+    "note": "Separate from mechanical qualification; rules not yet specified by owner."
+  },
+  "exit_rules": [],
+  "separate_entry_requirements": [
+    "VCP contraction geometry",
+    "pivot confirmation",
+    "relative strength vs SPY",
+    "breakout volume"
+  ],
+  "classification": "EXACT_PLATFORM"
+}

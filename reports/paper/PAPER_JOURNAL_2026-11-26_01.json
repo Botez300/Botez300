@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-11-26T17:26:45.970689+00:00",
+  "mode": "PAPER",
+  "simulated_fills": [],
+  "decisions": [
+    {
+      "file": "TEST_ONLY_DAILY_2026-11-26_01.json",
+      "outcome": "REJECTED",
+      "reasons": [
+        "TEST_ONLY",
+        "INVALID_STATUS TEST_ONLY",
+        "MISSING_MANDATORY scanner_rules_version",
+        "MISSING_MANDATORY generated_at",
+        "MISSING_MANDATORY market_data_as_of",
+        "MISSING_MANDATORY valid_until",
+        "MISSING_MANDATORY market_regime",
+        "MISSING_EXPIRY"
+      ]
+    },
+    {
+      "file": "TEST_ONLY_WEEKLY_2026-11-26_01.json",
+      "outcome": "REJECTED",
+      "reasons": [
+        "TEST_ONLY",
+        "INVALID_STATUS TEST_ONLY",
+        "MISSING_MANDATORY scanner_rules_version",
+        "MISSING_MANDATORY generated_at",
+        "MISSING_MANDATORY market_data_as_of",
+        "MISSING_MANDATORY valid_until",
+        "MISSING_MANDATORY market_regime",
+        "MISSING_EXPIRY"
+      ]
+    }
+  ],
+  "summary": {
+    "reports_or_candidates_evaluated": 2,
+    "simulated_fills": 0,
+    "rejected": 2
+  }
+}

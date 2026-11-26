@@ -1,0 +1,50 @@
+{
+  "format": 2,
+  "strategy": "CAN_SLIM",
+  "status": "DEFINED_PENDING_APPROVAL",
+  "source_document": "specs/source/legion_scanner_instructions_2026-11-26.md",
+  "source_sha256": "d51e007509b1fb89edb2e7941136405affe39d24208810103dcfc3e87106c28d",
+  "activation": {
+    "approved": false,
+    "approved_by": null,
+    "approved_at": null,
+    "note": "Mechanical scanning runs; NO trade entry may originate from this strategy until the owner approves the pending semantics, data gaps are closed, and entry-confirmation rules are defined."
+  },
+  "params": {
+    "universe": "IWM_HOLDINGS",
+    "liquidity": {
+      "min_price": 5.0,
+      "min_median_dollar_volume_20d": 5000000,
+      "max_spread_pct_of_mid": null
+    },
+    "eps_growth_min": 0.25,
+    "accepted_eps_bases": [],
+    "n_band_pct": 0.15,
+    "rp_yearly_min": 80,
+    "analyst_lookback_days": 90,
+    "market_index": null,
+    "min_market_bars": 290,
+    "sma200_lookback_sessions": 90
+  },
+  "pending_semantics": [
+    "Range(52,1) weekly-offset semantics",
+    "monthly SMA20 offset semantics",
+    "market_index for M (owner did not name the index)",
+    "EPS basis to use (GAAP vs adjusted)",
+    "spread threshold for 'clearly untradeable'",
+    "IWM holdings vs Russell2000 index membership"
+  ],
+  "data_gaps": [
+    "Quarterly EPS only 7 reported quarters via get_earnings_results (need E[0..16]); basis undocumented",
+    "RP(yearly) for SPX500 unavailable",
+    "Dated individual analyst Buy ratings unavailable (aggregate counts only)",
+    "IWM holdings list unavailable (scanner offers Russell2000 index code)"
+  ],
+  "max_candidates": 20,
+  "entry_confirmation": {
+    "defined": false,
+    "note": "Separate from mechanical qualification; rules not yet specified by owner."
+  },
+  "exit_rules": [],
+  "classification": "EXACT_PLATFORM"
+}

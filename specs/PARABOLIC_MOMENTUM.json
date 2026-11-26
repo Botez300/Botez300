@@ -1,0 +1,39 @@
+{
+  "format": 2,
+  "strategy": "PARABOLIC_MOMENTUM",
+  "status": "DEFINED_PENDING_APPROVAL",
+  "source_document": "specs/source/legion_scanner_instructions_2026-11-26.md",
+  "source_sha256": "d51e007509b1fb89edb2e7941136405affe39d24208810103dcfc3e87106c28d",
+  "activation": {
+    "approved": false,
+    "approved_by": null,
+    "approved_at": null,
+    "note": "Mechanical scanning runs; NO trade entry may originate from this strategy until the owner approves the pending semantics, data gaps are closed, and entry-confirmation rules are defined."
+  },
+  "params": {
+    "universe": "US_COMMON",
+    "window": 10,
+    "window_mode": "common_anchor",
+    "bb_std": 2.0,
+    "bb_ddof": 0,
+    "min_relative_volume": 2.0,
+    "min_roc5_pct": 40.0,
+    "min_close": 5.0
+  },
+  "pending_semantics": [
+    "ten-candle ALL group: common anchor vs different candles",
+    "Bollinger stdev convention (population ddof=0 assumed; Legend default average is EXPONENTIAL)",
+    "Relative Volume (20,SMA,1) baseline/offset",
+    "ROC scale (percent assumed)",
+    "ranking key (unspecified)"
+  ],
+  "data_gaps": [],
+  "max_candidates": 10,
+  "entry_confirmation": {
+    "defined": false,
+    "note": "Separate from mechanical qualification; rules not yet specified by owner."
+  },
+  "exit_rules": [],
+  "execution_controls": "chasing/extension rejected separately at entry, not as mechanical gates",
+  "classification": "EXACT_PLATFORM"
+}

@@ -1,0 +1,297 @@
+{
+  "schema_version": "1.1",
+  "scanner_rules_version": "2026-11-26",
+  "report_id": "DAILY_2026-11-26_123541",
+  "report_type": "DAILY",
+  "generated_at": "2026-11-26T12:35:41-05:00",
+  "market_data_as_of": "2026-11-25T16:00:00-05:00",
+  "valid_until": "2026-11-26T12:35:41-05:00",
+  "market_session": "CLOSED_THANKSGIVING",
+  "market_regime": "MIXED_RISK_OFF_REBOUND (research inference; Hamilton/TTI unverified)",
+  "leading_sectors": [
+    "Materials (1-day price return)",
+    "Real Estate (1-day price return)",
+    "Communication Services (1-day price return)"
+  ],
+  "leading_industries": [],
+  "publication_status": "DRAFT",
+  "test_only": false,
+  "research_only": true,
+  "execution_authorized": false,
+  "sources": [
+    {
+      "provider": "calendar",
+      "url": "https://www.nyse.com/trade/hours-calendars",
+      "as_of": null
+    },
+    {
+      "provider": "reuters",
+      "url": "https://www.reuters.com/business/nasdaq-futures-slide-over-2-fresh-us-tariff-concerns-inflation-data-focus-2026-11-25/",
+      "as_of": "2026-11-25T16:00:00-05:00"
+    },
+    {
+      "provider": "indices",
+      "url": "https://portfolio-terminal.com/markets/stock-market-close/november-25-2026",
+      "as_of": "2026-11-25T16:00:00-05:00"
+    },
+    {
+      "provider": "sectors",
+      "url": "https://byliem.com/en/heatmap/us/2026-11-25",
+      "as_of": "2026-11-25T16:00:00-05:00"
+    },
+    {
+      "provider": "breadth",
+      "url": "https://swingtradebot.com/market-recap/2026-11-25",
+      "as_of": "2026-11-25T16:00:00-05:00"
+    },
+    {
+      "provider": "schema",
+      "url": "https://github.com/Botez300/Botez300/blob/858e491/schemas/legion_signal_v1_1.schema.json",
+      "as_of": null
+    },
+    {
+      "provider": "native",
+      "url": "https://github.com/Botez300/Botez300/blob/858e491/specs/native/PARABOLIC_NATIVE.json",
+      "as_of": null
+    },
+    {
+      "provider": "Robinhood MCP",
+      "reference": "Robinhood MCP get_equity_historicals (regular daily split-adjusted; 61 bars 2026-09-01 through 2026-11-25)",
+      "as_of": "2026-11-25T16:00:00-05:00"
+    },
+    {
+      "provider": "Robinhood MCP",
+      "reference": "Robinhood MCP get_equity_fundamentals (market_date 2026-11-25)",
+      "as_of": "2026-11-25T16:00:00-05:00"
+    }
+  ],
+  "strategy_sections": [
+    {
+      "name": "MARKET_REGIME",
+      "status": "PARTIAL",
+      "as_of": "2026-11-25T16:00:00-05:00",
+      "index_closes": [
+        {
+          "index": "S&P 500",
+          "close": 7182.78,
+          "change_pct": -0.25
+        },
+        {
+          "index": "Dow",
+          "close": 50182.95,
+          "change_pct": 0.33
+        },
+        {
+          "index": "Nasdaq Composite",
+          "close": 23585.8,
+          "change_pct": -0.62
+        },
+        {
+          "index": "Russell 2000",
+          "close": 2704.05,
+          "change_pct": 0.71
+        }
+      ],
+      "interpretation": "Mixed risk-off/rebound; value and small caps relatively stronger; not a verified Hamilton/TTI regime.",
+      "breadth_provider": "SwingTradeBot",
+      "advancers": 3780,
+      "decliners": 2151,
+      "above_50dma_pct": 33.12,
+      "vix": 28.2,
+      "vix_change_pct": 6.98,
+      "sources": [
+        "https://www.reuters.com/business/nasdaq-futures-slide-over-2-fresh-us-tariff-concerns-inflation-data-focus-2026-11-25/",
+        "https://portfolio-terminal.com/markets/stock-market-close/november-25-2026",
+        "https://swingtradebot.com/market-recap/2026-11-25",
+        "https://byliem.com/en/heatmap/us/2026-11-25"
+      ]
+    },
+    {
+      "name": "SECTOR_LEADERS",
+      "status": "OBSERVED_ONE_DAY_PRICE_ONLY",
+      "as_of": "2026-11-25T16:00:00-05:00",
+      "returns_pct": {
+        "XLB": 2.05,
+        "XLRE": 0.92,
+        "XLC": 0.89,
+        "XLI": 0.83,
+        "XLE": 0.71,
+        "XLF": 0.7,
+        "XLU": 0.48,
+        "XLP": 0.46,
+        "XLY": -0.2,
+        "XLV": -0.56,
+        "XLK": -0.81
+      },
+      "source": "https://byliem.com/en/heatmap/us/2026-11-25"
+    },
+    {
+      "name": "INDUSTRY_CAPITAL_FLOW",
+      "status": "UNVERIFIED",
+      "reason": "No verified 20-session industry net flows, rank or normalization; price returns are not fund flows."
+    },
+    {
+      "name": "CAN_SLIM",
+      "status": "UNVERIFIED",
+      "coverage": "No verified IWM universe or full EPS/RP/ratings history. No ranked candidates."
+    },
+    {
+      "name": "MINERVINI_VCP_SEPA",
+      "status": "UNVERIFIED",
+      "coverage": "Five-stock sample market caps only; no exact 10-point reading or sufficient full range inputs. AMBA fails >$2B market cap (1.575B); no full verified ranking."
+    },
+    {
+      "name": "TURTLE",
+      "status": "UNVERIFIED",
+      "coverage": "No exact parameterized System 1/2 emergence. RSI is not a mandatory gate."
+    },
+    {
+      "name": "WEINSTEIN_STAGE_2",
+      "status": "UNVERIFIED",
+      "coverage": "No exact Stage Analysis signal or verified weekly window semantics; separate 52-week base board not assessed."
+    },
+    {
+      "name": "MAGIC_FORMULA",
+      "status": "UNVERIFIED",
+      "coverage": "Five-stock sample; all five pass $10M and 300K SMA20 share-volume gates; EV and TTM ROIC unverified. No combined rank.",
+      "source": "Robinhood MCP get_equity_fundamentals (market_date 2026-11-25)",
+      "sample": [
+        {
+          "ticker": "INSM",
+          "market_cap_usd": 37371435368.29669,
+          "sma20_share_volume": 9570496
+        },
+        {
+          "ticker": "EROK",
+          "market_cap_usd": 2821094681.879824,
+          "sma20_share_volume": 726106
+        },
+        {
+          "ticker": "HPQ",
+          "market_cap_usd": 28063736942.482456,
+          "sma20_share_volume": 15804849
+        },
+        {
+          "ticker": "AMBA",
+          "market_cap_usd": 1575392290,
+          "sma20_share_volume": 2406084
+        },
+        {
+          "ticker": "NTNX",
+          "market_cap_usd": 12624776780.589502,
+          "sma20_share_volume": 3118079
+        }
+      ]
+    },
+    {
+      "name": "PARABOLIC_MOMENTUM",
+      "status": "UNVERIFIED_EXACT_PLATFORM",
+      "coverage": "Five selected unusually active common stocks, not market-wide; 10 completed daily candles each, 61 bars of inputs per symbol. Exact platform group/indicator semantics not verified.",
+      "native_variant": {
+        "status": "RESEARCH_ONLY",
+        "mechanical_matches": 1,
+        "sample": [
+          {
+            "ticker": "INSM",
+            "close": 170.31,
+            "upper_bb20": 163.1443,
+            "relative_volume": 3.8127,
+            "roc5_pct": 42.1619,
+            "max_roc5_last10_pct": 42.1619,
+            "rsi14_61bar_warmup": 82.97,
+            "sma20_share_volume": 9570496,
+            "market_cap_usd": 37371435368.29669,
+            "provider_52w_high": 212.75,
+            "return20_pct": 75.61,
+            "native_common_anchor_pass": true
+          },
+          {
+            "ticker": "EROK",
+            "close": 21.42,
+            "upper_bb20": 22.0691,
+            "relative_volume": 6.6319,
+            "roc5_pct": 5.2063,
+            "max_roc5_last10_pct": 12.6616,
+            "rsi14_61bar_warmup": 55.43,
+            "sma20_share_volume": 726106,
+            "market_cap_usd": 2821094681.879824,
+            "provider_52w_high": 27.42,
+            "return20_pct": 3.33,
+            "native_common_anchor_pass": false
+          },
+          {
+            "ticker": "HPQ",
+            "close": 31.15,
+            "upper_bb20": 30.9276,
+            "relative_volume": 2.7178,
+            "roc5_pct": 8.6881,
+            "max_roc5_last10_pct": 8.6881,
+            "rsi14_61bar_warmup": 57.46,
+            "sma20_share_volume": 15804849,
+            "market_cap_usd": 28063736942.482456,
+            "provider_52w_high": 36.225,
+            "return20_pct": -4.01,
+            "native_common_anchor_pass": false
+          },
+          {
+            "ticker": "AMBA",
+            "close": 35.68,
+            "upper_bb20": 70.5897,
+            "relative_volume": 8.2947,
+            "roc5_pct": -34.6999,
+            "max_roc5_last10_pct": 10.6761,
+            "rsi14_61bar_warmup": 25.88,
+            "sma20_share_volume": 2406084,
+            "market_cap_usd": 1575392290,
+            "provider_52w_high": 96.358,
+            "return20_pct": -46.16,
+            "native_common_anchor_pass": false
+          },
+          {
+            "ticker": "NTNX",
+            "close": 46.3,
+            "upper_bb20": 69.6074,
+            "relative_volume": 5.3985,
+            "roc5_pct": -19.2817,
+            "max_roc5_last10_pct": 3.9624,
+            "rsi14_61bar_warmup": 22.93,
+            "sma20_share_volume": 3118079,
+            "market_cap_usd": 12624776780.589502,
+            "provider_52w_high": 75.98,
+            "return20_pct": -36.29,
+            "native_common_anchor_pass": false
+          }
+        ],
+        "method": "Common anchor in last 10 completed daily candles; upper SMA20+2 population SD including anchor; RVOL=anchor volume/mean preceding 20; ROC=100*(C/C[-5]-1). No entry/exit approval.",
+        "source": "Robinhood MCP get_equity_historicals (regular daily split-adjusted; 61 bars 2026-09-01 through 2026-11-25)",
+        "as_of": "2026-11-25T16:00:00-05:00",
+        "signal": "INSM native mechanical pass; WATCH ONLY, exact version UNVERIFIED, no order."
+      }
+    },
+    {
+      "name": "RSI_OVERSOLD",
+      "status": "PARTIAL",
+      "coverage": "Wilder daily RSI14 seeded with 14 differences, 61 daily bars; weekly unavailable; threshold <=30. AMBA 25.88 and NTNX 22.93 are sample reversal-watch observations only; no reversal confirmation."
+    },
+    {
+      "name": "52_WEEK_HIGHS",
+      "status": "PARTIAL",
+      "coverage": "Five sampled stocks below provider 52-week high; SwingTradeBot reports 75 qualifying closing highs and 15 lows under its own universe, not Legion ranking. No verified top 10."
+    },
+    {
+      "name": "OTHER_INTELLIGENCE",
+      "status": "UNVERIFIED",
+      "coverage": "Long-base breakout, compounder and replacement ranking, proprietary LuxAlgo, ATH VWAP, long MAs, squeeze, short interest, insider activity, portfolio review and full relative-strength board not verified; no recommendation."
+    }
+  ],
+  "candidates": [],
+  "missing_data": [
+    "Full current IWM constituent universe and 17-quarter EPS, RP metric and dated analyst ratings",
+    "Broad US equities universe coverage; exact proprietary ten-point Minervini, Turtle and Weinstein signals",
+    "Platform Bollinger/RVOL/group-window semantics; exact parabolic verification unavailable",
+    "Operating income/EV and exact TTM ROIC",
+    "Hamilton/TTI and 20-day industry fund-flow attribution, LuxAlgo, ATH VWAP and long-horizon inputs",
+    "Weekly RSI and broad-universe ranking; current quotes and options chains not verified during holiday",
+    "Entry and exit approval / live market revalidation"
+  ]
+}
