@@ -1,0 +1,54 @@
+{
+  "report_id": "INTEGRATION_TEST_2026-11-26_01",
+  "mode": "PAPER",
+  "generated_at": "2026-11-26T16:20:37.024292+00:00",
+  "pytest": {
+    "passed": 20,
+    "failed": 0
+  },
+  "orders_submitted": 0,
+  "live_trading": false,
+  "files": [
+    {
+      "filename": "TEST_ONLY_DAILY_2026-11-26_01.json",
+      "sha256": "1f0852a751d70c6a27bcd2df46452a4241fd11cf8e498d849b03ecd5d7af90d1",
+      "schema_ok": true,
+      "integrity_ok": true,
+      "safety_ok": true,
+      "admitted": false,
+      "report_id": "TEST_ONLY_DAILY_2026-11-26_01",
+      "reasons": [
+        "TEST_ONLY",
+        "MISSING_MANDATORY scanner_rules_version",
+        "MISSING_MANDATORY generated_at",
+        "MISSING_MANDATORY market_data_as_of",
+        "MISSING_MANDATORY valid_until",
+        "MISSING_MANDATORY market_regime",
+        "INVALID_STATUS TEST_ONLY",
+        "MISSING_EXPIRY"
+      ],
+      "notes": []
+    },
+    {
+      "filename": "TEST_ONLY_WEEKLY_2026-11-26_01.json",
+      "sha256": "e83881c73e63bb62823911572629644e915d3e2e6ea6b95b540ab5b9efa4b59e",
+      "schema_ok": true,
+      "integrity_ok": true,
+      "safety_ok": true,
+      "admitted": false,
+      "report_id": "TEST_ONLY_WEEKLY_2026-11-26_01",
+      "reasons": [
+        "TEST_ONLY",
+        "MISSING_MANDATORY scanner_rules_version",
+        "MISSING_MANDATORY generated_at",
+        "MISSING_MANDATORY market_data_as_of",
+        "MISSING_MANDATORY valid_until",
+        "MISSING_MANDATORY market_regime",
+        "INVALID_STATUS TEST_ONLY",
+        "MISSING_EXPIRY"
+      ],
+      "notes": []
+    }
+  ],
+  "robinhood_mcp": "read-only quote call (SPY) succeeded; no candidates to cross-check"
+}

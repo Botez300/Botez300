@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "scanner_rules_version": null,
+  "report_id": "TEST_ONLY_WEEKLY_2026-11-26_01",
+  "report_type": "WEEKLY",
+  "generated_at": null,
+  "market_data_as_of": null,
+  "valid_until": null,
+  "market_session": "TEST_ONLY",
+  "market_regime": null,
+  "leading_sectors": [],
+  "leading_industries": [],
+  "publication_status": "TEST_ONLY",
+  "test_only": true,
+  "research_only": true,
+  "execution_authorized": false,
+  "sources": [],
+  "strategy_sections": [],
+  "candidates": [],
+  "missing_data": [
+    "Synthetic transport test; no market data or scanner execution."
+  ]
+}
